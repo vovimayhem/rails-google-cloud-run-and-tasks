@@ -88,6 +88,7 @@ FROM build-deps AS development
 # Add development-time dependencies:
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
+    openssh-client \
     sudo \
  && rm -rf /var/lib/apt/lists/*
 
