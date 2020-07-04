@@ -1,0 +1,70 @@
+version: "3.7"
+
+volumes:
+  gem_bundle:
+  node_modules:
+  vs_code_server:
+
+services:
+  demo:
+    image: vovimayhem/rails-google-cloud-run-and-tasks:development
+    build:
+      context: .
+      target: development
+      args:
+        DEVELOPER_UID: ${UID:-1000}
+        DEVELOPER_GID: ${GID:-1000}
+        DEVELOPER_USERNAME: ${USER:-you}
+    working_dir: ${PWD}
+
+    entrypoint: ${PWD}/bin/dev-entrypoint.sh
+
+    volumes:
+      # Mount the app code into the app containers at the "$HOME/prex-messaging"
+      # folder:
+      - .:${PWD}:delegated
+
+      # After mounting the app code, this replaces (copies) the image's gem
+      # bundle with a volume. We're doing this so we are not forced to re-build
+      # the image over and over whenever we install a new gem.
+      - gem_bundle:/usr/local/bundle
+
+      - node_modules:${PWD}/node_modules
+      
+      # Mount the VS Code server files:
+      - vs_code_server:/usr/src/.vscode-server
+
+    # Keep the stdin open, so we can attach to our app container's process
+    # and do things such as byebug, etc:
+    stdin_open: true
+
+    # Enable sending signals (CTRL+C, CTRL+P + CTRL+Q) into the container:
+    tty: true
+
+    # The command we want to execute by default when running the container
+    # [Optional] Required for ptrace-based debuggers like C++, Go, and Rust
+    cap_add:
+      - SYS_PTRACE
+      - NET_ADMIN
+    security_opt:
+      - seccomp:unconfined
+
+    ports:
+      - ${DEMO_WEB_PORT:-3000}:3000
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"
+
+    # Specify environment variables available for our app containers. We'll
+    # leave a YML anchor in case we need to override or add more variables if
+    # needed on each app service:
+    environment: &app_environment
+      # We'll set the HOME and PATH based on where we mounted the code:
+      HOME: ${PWD}
+      PATH: ${PWD}/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+      # Rails config:
+      RAILS_LOG_TO_STDOUT: "true"
+
+      DEBIAN_FRONTEND: dialog
+      VSCODE_CONTEXT: "yes"

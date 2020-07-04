@@ -1,0 +1,47 @@
+version: "3.7"
+
+volumes:
+  gem_bundle: # Used to store the app's gems.
+  node_modules:
+
+services:
+  test: &app
+    image: vovimayhem/rails-google-cloud-run-and-tasks:development
+    build:
+      context: .
+      target: development
+      args:
+        DEVELOPER_UID: ${UID:-1000}
+        DEVELOPER_GID: ${GID:-1000}
+        DEVELOPER_USERNAME: ${USER:-you}
+    entrypoint: ${PWD}/bin/dev-entrypoint.sh
+    working_dir: ${PWD}
+    volumes:
+      # Mount the app code into the app containers at the "/usr/src" folder:
+      - .:${PWD}
+
+      # After mounting the app code, this replaces (copies) the image's gem
+      # bundle with a volume. We're doing this so we are not forced to re-build
+      # the image over and over whenever we install a new gem.
+      - gem_bundle:/usr/local/bundle
+
+      - node_modules:${PWD}/node_modules
+
+    # Keep the stdin open, so we can attach to our app container's process
+    # and do things such as byebug, etc:
+    stdin_open: true
+
+    # Enable sending signals (CTRL+C, CTRL+P + CTRL+Q) into the container:
+    tty: true
+
+    command: rspec
+
+    environment:
+      HOME: ${PWD}
+      PATH: ${PWD}/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+  web:
+    <<: *app
+    command: rails server -b 0.0.0.0
+    ports:
+      - ${DEMO_WEB_PORT:-3000}:3000

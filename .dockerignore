@@ -1,0 +1,97 @@
+# Ignore version control files:
+.git/
+.gitignore
+.gitattributes
+.gitconfig
+
+# Ignore github templates:
+.github/
+
+# Ignore docker and environment files:
+*Dockerfile
+docker-compose*.yml
+staging-compose.yml
+ci-compose.yml
+.dockerignore
+stack.yml
+.devcontainer
+
+# Ignore dotenv files
+**/*.env
+
+# Ignore log files:
+log/*.log
+
+# Ignore temporary files:
+tmp/
+!tmp/cache/.keep
+!tmp/pids/.keep
+!tmp/sockets/.keep
+
+# Ignore OS artifacts:
+**/.DS_Store
+
+# Ignore database dumps:
+db/dumps
+
+# Ignore development container shell history files:
+.*_hist*
+
+# Ignore vim info
+.viminfo
+
+# Ignore bundler stuff
+.bundle/*
+
+# Ignore Codeclimate configuration:
+.codeclimate.yml
+.csslintrc
+.eslintignore
+.eslintrc
+.rubocop.yml
+.rubocop-rails.yml
+.reek.yml
+.scss-lint.yml
+coffeelint.json
+
+# Ignore test coverage reports:
+coverage
+
+# Ignore node modules:
+**/node_modules
+
+# Ignore the `.config` file that gets created from the app container:
+.config
+
+# Ignore RSpec state:
+spec/examples.txt
+
+# Ignore local google cloud credentials:
+/*google-cloud-credentials*.json
+
+# Ignore VSCode configs:
+.vscode
+.vscode-server
+.devcontainer
+
+# Ignore CI/CD Files:
+.semaphore
+
+# Ignore OS artifacts:
+**/.DS_Store
+
+# Ignore VIM artifacts:
+.viminfo
+
+# Ignore solargraph config
+.solargraph
+
+# Ignore mounted artifacts and folders generated from our Docker development
+# environment:
+.local
+.bundle
+.npm
+.cache
+.gem
+.gnupg
+.webdrivers

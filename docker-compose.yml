@@ -1,0 +1,4 @@
+version: "3.7"
+
+# The application services will be defined at `docker-compose.override.yml`, to
+# leave here the service definitions common to the staging and ci/cd environments.
