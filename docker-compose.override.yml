@@ -39,6 +39,8 @@ services:
     environment:
       HOME: ${PWD}
       PATH: ${PWD}/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      
+      # LOOK! No RAILS_ENV/RACK_ENV setting!
 
   web:
     <<: *app
