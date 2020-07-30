@@ -11,7 +11,10 @@
     ".solargraph": true,
     ".viminfo": true,
     ".vscode-server": true,
-    ".webdrivers": true
+    ".webdrivers": true,
+    ".cache": true,
+    ".ssh": true,
+    ".yarn": true,
   },
   "solargraph.autoformat": true,
   "solargraph.diagnostics": true,

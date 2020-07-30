@@ -94,6 +94,14 @@ db/dumps/*
 
 # Ignore npm configuration
 .npm
+# Ignore the .ssh folder:
+.ssh
+
+# Ignore the .yarn folder:
+.yarn
+
+# ==============================================================================
+# Visual Studio Code Stuff:
 
 # Ignore .vscode-server, because when developing from within a container in
 # VSCode will try to add these to the Git project:
@@ -101,3 +109,5 @@ db/dumps/*
 
 # Ignore solargraph config
 .solargraph
+
+# ==============================================================================
