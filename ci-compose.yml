@@ -1,0 +1,79 @@
+# This Compose file is meant to be used along the project's `docker-compose.yml`
+# file on CI/CD contexts, such as SemaphoreCI or Github Actions.
+#
+# A useful alias to run this on your CI/CD pipelines:
+# `alias ci-compose="docker-compose --file docker-compose.yml --file ci-compose.yml"`
+#
+# See https://docs.docker.com/compose/extends/#understanding-multiple-compose-files
+
+# We'll use the '3.x spec since it supports the 'cache_from'
+# option:
+version: '3.7'
+
+volumes:
+  test_coverage:
+
+services:
+  test:
+    image: vovimayhem/rails-google-cloud-run-and-tasks:testing
+
+    entrypoint: ${PWD}/bin/dev-entrypoint.sh
+    working_dir: ${PWD}
+    volumes:
+      # Mount the app code into the app containers at the "/usr/src" folder:
+      - .:${PWD}
+
+      # Mount the test coverage volume, so the results persist in this volume:
+      - test_coverage:${PWD}/coverage
+
+    build: &app_ci_build
+      context: .
+      target: testing
+      args: &app_ci_build_args
+        DEVELOPER_UID: ${UID:-1000}
+        DEVELOPER_GID: ${GID:-1000}
+        DEVELOPER_USERNAME: ${USER:-you}
+      # cache_from:
+      #   # The order of this list will be considered by the `docker-image-manager` script!
+      #   # Also, be sure to include the service image name in this list as well.
+      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${GIT_COMMIT_SHORT_SHA:-latest} # The resulting image must also be on cache_from!
+      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${TAG_SAFE_BRANCH}
+      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing
+    command: rspec
+    environment:
+      HOME: ${PWD}
+      PATH: ${PWD}/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      
+      # LOOK! No RAILS_ENV/RACK_ENV setting!
+
+      NEW_RELIC_AGENT_ENABLED: "false"
+
+      GIT_BRANCH: ${GIT_BRANCH}
+      GIT_COMMIT_SHA: ${GIT_COMMIT_SHA}
+      GIT_COMMITTED_AT: ${GIT_COMMITTED_AT}
+      CC_TEST_REPORTER_ID: 03a1840b0c65eac80ee35ecac9f632736b55acfcc0c598b8542963b915048a73
+
+  builder:
+    image: vovimayhem/rails-google-cloud-run-and-tasks:builder-${GIT_COMMIT_SHORT_SHA:-latest}
+    build:
+      <<: *app_ci_build
+      target: builder
+      # cache_from:
+      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder-${GIT_COMMIT_SHORT_SHA:-latest}
+      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${GIT_COMMIT_SHORT_SHA:-latest}
+      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder-${TAG_SAFE_BRANCH}
+      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${TAG_SAFE_BRANCH}
+      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder
+      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing
+
+  release:
+    image: vovimayhem/rails-google-cloud-run-and-tasks:${GIT_COMMIT_SHORT_SHA:-latest}
+    build:
+      <<: *app_ci_build
+      target: release
+      args:
+        <<: *app_ci_build_args
+        SOURCE_BRANCH: ${GIT_BRANCH}
+        SOURCE_COMMIT: ${GIT_COMMIT_SHA}
+        BUILD_DATE: ${BUILD_DATE}
+        IMAGE_NAME: "vovimayhem/rails-google-cloud-run-and-tasks"
