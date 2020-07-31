@@ -56,6 +56,9 @@ group :development do
 end
 
 group :test do
+  gem 'capybara', '~> 3.33'
+  gem 'cuprite', '~> 0.10'
+  gem 'selenium-webdriver', '~> 3.142', '>= 3.142.7' # We’ll be able to remove this gem in Rails 6.1.
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
