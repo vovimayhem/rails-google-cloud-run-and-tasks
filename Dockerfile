@@ -95,6 +95,12 @@ COPY --chown=${DEVELOPER_USERNAME} Gemfile* /home/${DEVELOPER_USERNAME}/rails-go
 # Docker image possible:
 RUN bundle install --jobs=4 --retry=3 --without="development"
 
+# Copy the project's node package dependency lists:
+COPY --chown=${DEVELOPER_USERNAME} package.json yarn.lock /home/${DEVELOPER_USERNAME}/rails-google-cloud-run-and-tasks/
+
+# Install the project's node packages:
+RUN yarn install
+
 # III: Development Stage: ======================================================
 # In this stage we'll install all the project's development libraries, and
 # the default development commands.
@@ -127,6 +133,12 @@ COPY --chown=${DEVELOPER_USERNAME} . /srv/rails-google-cloud-run-and-tasks
 
 # Set the working directory:
 WORKDIR /srv/rails-google-cloud-run-and-tasks
+
+# Precompile the application assets:
+RUN export SECRET_KEY_BASE=10167c7f7654ed02b3557b05b88ece RAILS_ENV=production \
+ && rails assets:precompile \
+ # Test if everything is OK:
+ && rails secret > /dev/null
 
 # Remove installed gems that belong to the development & test groups -
 # we'll copy the remaining system gems into the deployable image on the next

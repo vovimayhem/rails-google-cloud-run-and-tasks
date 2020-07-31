@@ -51,6 +51,7 @@ services:
 
     ports:
       - ${DEMO_WEB_PORT:-3000}:3000
+      - ${DEMO_WEBPACKER_DEV_SERVER_PORT:-3035}:3035
 
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"
@@ -68,3 +69,8 @@ services:
 
       DEBIAN_FRONTEND: dialog
       VSCODE_CONTEXT: "yes"
+
+      # Bind the webpack dev server service to 0.0.0.0 to allow connections from
+      # the host:
+      WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
+      WEBPACKER_DEV_SERVER_PUBLIC: localhost:${DEMO_WEBPACKER_DEV_SERVER_PORT:-3035}
