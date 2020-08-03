@@ -9,9 +9,12 @@ docker_tag_name_from_branch = git_branch.split('/').reverse.join('-')
 
 build_date = Time.now.strftime('%Y-%m-%dT%H:%M:%S%z')
 
+git_committed_at = Time.at(`git log -1 --pretty=format:%ct #{git_sha}`.to_i).strftime('%Y-%m-%dT%H:%M:%S%z')
+
 # See https://help.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
 
 puts "::set-env name=BUILD_DATE::#{build_date}"
+puts "::set-env name=GIT_COMMITTED_AT::#{git_committed_at}"
 puts "::set-env name=GIT_COMMIT_SHA::#{git_sha}"
 puts "::set-env name=GIT_COMMIT_SHORT_SHA::#{git_short_sha}"
 puts "::set-env name=GIT_BRANCH::#{git_branch}"
