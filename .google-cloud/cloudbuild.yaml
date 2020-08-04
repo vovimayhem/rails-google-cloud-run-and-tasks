@@ -4,10 +4,11 @@
 # - https://cloud.google.com/cloud-build/docs/configuring-builds/use-bash-and-bindings-in-substitutions
 steps:
   - name: 'gcr.io/kaniko-project/executor:latest'
+    id: 'build-test-image'
     args:
       - --destination=gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${BRANCH_NAME//\\/-}
       - --cache=true
-      - --cache-ttl=XXh
+      - --cache-ttl=72h
       - --target=installer
 
   - name: 'docker/compose:1.19.0'
@@ -16,4 +17,4 @@ steps:
       - "GOOGLE_CLOUD_PROJECT=${PROJECT_ID}"
       - "GIT_BRANCH=${BRANCH_NAME}"
       - "GIT_COMMIT_SHA=${COMMIT_SHA}"
-      - "GIT_COMMITTED_AT=${}"
+    waitFor: ['build-test-image']
