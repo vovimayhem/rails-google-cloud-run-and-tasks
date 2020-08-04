@@ -97,8 +97,8 @@ RUN bundle install --jobs=4 --retry=3 --without="development"
 
 # Copy the project's node package dependency lists:
 COPY --chown=${DEVELOPER_USERNAME} package.json yarn.lock /home/${DEVELOPER_USERNAME}/rails-google-cloud-run-and-tasks/
-RUN mkdir node_modules
-RUN ls -lah && whoami && id
+
+RUN ls -lah ~/ && whoami && id
 
 # Install the project's node packages:
 RUN yarn install
