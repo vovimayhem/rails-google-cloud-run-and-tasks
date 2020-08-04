@@ -10,6 +10,9 @@ steps:
       - --cache=true
       - --cache-ttl=72h
       - --target=testing
+      - --build-arg=DEVELOPER_UID=1001
+      - --build-arg=DEVELOPER_GID=1001
+      - --build-arg=DEVELOPER_USERNAME=vov
 
   - id: 'run-rspec-tests'
     name: 'docker/compose:1.19.0'
