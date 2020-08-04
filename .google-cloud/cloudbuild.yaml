@@ -1,0 +1,19 @@
+
+# See also:
+# - https://cloud.google.com/cloud-build/docs/configuring-builds/substitute-variable-values
+# - https://cloud.google.com/cloud-build/docs/configuring-builds/use-bash-and-bindings-in-substitutions
+steps:
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    args:
+      - --destination=gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${BRANCH_NAME//\\/-}
+      - --cache=true
+      - --cache-ttl=XXh
+      - --target=installer
+
+  - name: 'docker/compose:1.19.0'
+    args: [ '-f', 'docker-compose.yml', '-f', 'ci-compose.yml', 'run', 'test' ]
+    env:
+      - "GOOGLE_CLOUD_PROJECT=${PROJECT_ID}"
+      - "GIT_BRANCH=${BRANCH_NAME}"
+      - "GIT_COMMIT_SHA=${COMMIT_SHA}"
+      - "GIT_COMMITTED_AT=${}"
