@@ -80,6 +80,10 @@ RUN echo "${DEVELOPER_USERNAME} ALL=(ALL) NOPASSWD:ALL" | sudo tee "/etc/sudoers
 # Set the developer user as the current user:
 USER ${DEVELOPER_USERNAME}
 
+# Create the app directory (hopefully with the developer user as owner... using
+# Kaniko seems to disregard the 'USER' step...)
+RUN mkdir /home/${DEVELOPER_USERNAME}/rails-google-cloud-run-and-tasks
+
 # Set '/home/DEVELOPER_USERNAME/rails-google-cloud-run-and-tasks' path as the
 # working directory:
 WORKDIR /home/${DEVELOPER_USERNAME}/rails-google-cloud-run-and-tasks
