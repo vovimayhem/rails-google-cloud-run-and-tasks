@@ -15,7 +15,7 @@ steps:
       - --build-arg=DEVELOPER_USERNAME=vov
 
   - id: 'run-rspec-tests'
-    name: 'docker/compose:1.19.0'
+    name: 'docker/compose:1.26.2'
     args: [ '-f', 'docker-compose.yml', '-f', 'ci-compose.yml', 'run', 'test' ]
     env:
       - "GOOGLE_CLOUD_PROJECT=${PROJECT_ID}"
