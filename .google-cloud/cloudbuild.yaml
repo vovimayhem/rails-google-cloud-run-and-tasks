@@ -3,15 +3,16 @@
 # - https://cloud.google.com/cloud-build/docs/configuring-builds/substitute-variable-values
 # - https://cloud.google.com/cloud-build/docs/configuring-builds/use-bash-and-bindings-in-substitutions
 steps:
-  - name: 'gcr.io/kaniko-project/executor:latest'
-    id: 'build-test-image'
+  - id: 'build-test-image'
+    name: 'gcr.io/kaniko-project/executor:latest'
     args:
       - --destination=gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${_TAG_SAFE_BRANCH}
       - --cache=true
       - --cache-ttl=72h
       - --target=installer
 
-  - name: 'docker/compose:1.19.0'
+  - id: 'run-rspec-tests'
+    name: 'docker/compose:1.19.0'
     args: [ '-f', 'docker-compose.yml', '-f', 'ci-compose.yml', 'run', 'test' ]
     env:
       - "GOOGLE_CLOUD_PROJECT=${PROJECT_ID}"
