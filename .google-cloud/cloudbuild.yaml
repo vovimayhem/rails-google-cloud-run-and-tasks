@@ -6,7 +6,7 @@ steps:
   - name: 'gcr.io/kaniko-project/executor:latest'
     id: 'build-test-image'
     args:
-      - --destination=gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${BRANCH_NAME//\\/-}
+      - --destination=gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${_TAG_SAFE_BRANCH}
       - --cache=true
       - --cache-ttl=72h
       - --target=installer
