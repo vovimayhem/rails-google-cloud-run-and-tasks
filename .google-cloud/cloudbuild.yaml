@@ -3,24 +3,27 @@
 # - https://cloud.google.com/cloud-build/docs/configuring-builds/substitute-variable-values
 # - https://cloud.google.com/cloud-build/docs/configuring-builds/use-bash-and-bindings-in-substitutions
 steps:
-  - id: 'build-test-image'
-    name: 'gcr.io/kaniko-project/executor:latest'
-    args:
-      - --destination=gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${_TAG_SAFE_BRANCH}
-      - --destination=gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${SHORT_SHA}
-      - --cache=true
-      - --cache-ttl=72h
-      - --target=testing
-    waitFor: [ '-' ]
+  - id: 'check-environment'
+    name: 'bash'
+    args: [ 'id' ]
+  # - id: 'build-test-image'
+  #   name: 'gcr.io/kaniko-project/executor:latest'
+  #   args:
+  #     - --destination=gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${_TAG_SAFE_BRANCH}
+  #     - --destination=gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${SHORT_SHA}
+  #     - --cache=true
+  #     - --cache-ttl=72h
+  #     - --target=testing
+  #   waitFor: [ '-' ]
 
-  - id: 'run-rspec-tests'
-    name: 'gcr.io/$PROJECT_ID/docker-compose'
-    args: [ '-f', 'docker-compose.yml', '-f', 'ci-compose.yml', 'run', 'test' ]
-    env:
-      - "PWD=/home/you/rails-google-cloud-run-and-tasks"
-      - "PROJECT_ID=${PROJECT_ID}"
-      - "_TAG_SAFE_BRANCH=${_TAG_SAFE_BRANCH}"
-      - "GIT_BRANCH=${BRANCH_NAME}"
-      - "GIT_COMMIT_SHA=${COMMIT_SHA}"
-      - "GIT_COMMIT_SHORT_SHA=${SHORT_SHA}"
-    waitFor: [ 'build-test-image' ]
+  # - id: 'run-rspec-tests'
+  #   name: 'gcr.io/$PROJECT_ID/docker-compose'
+  #   args: [ '-f', 'docker-compose.yml', '-f', 'ci-compose.yml', 'run', 'test' ]
+  #   env:
+  #     - "PWD=/home/you/rails-google-cloud-run-and-tasks"
+  #     - "PROJECT_ID=${PROJECT_ID}"
+  #     - "_TAG_SAFE_BRANCH=${_TAG_SAFE_BRANCH}"
+  #     - "GIT_BRANCH=${BRANCH_NAME}"
+  #     - "GIT_COMMIT_SHA=${COMMIT_SHA}"
+  #     - "GIT_COMMIT_SHORT_SHA=${SHORT_SHA}"
+  #   waitFor: [ 'build-test-image' ]
