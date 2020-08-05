@@ -7,6 +7,9 @@
 # Ignore github templates:
 .github/
 
+# Ignore google-cloud-build files:
+.google-cloud/
+
 # Ignore docker and environment files:
 *Dockerfile
 docker-compose*.yml
