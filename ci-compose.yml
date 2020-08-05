@@ -11,6 +11,7 @@
 version: '3.7'
 
 volumes:
+  node_modules:
   test_coverage:
 
 services:
@@ -20,8 +21,12 @@ services:
     entrypoint: ${PWD}/bin/dev-entrypoint.sh
     working_dir: ${PWD}
     volumes:
-      # Mount the app code into the app containers at the "/usr/src" folder:
+      # Mount the app code into the app containers at the same path on the
+      # container:
       - .:${PWD}
+      
+      # Mount the node modules volume:
+      - node_modules:${PWD}/node_modules
 
       # Mount the test coverage volume, so the results persist in this volume:
       - test_coverage:${PWD}/coverage

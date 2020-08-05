@@ -17,7 +17,7 @@ steps:
     name: 'gcr.io/$PROJECT_ID/docker-compose'
     args: [ '-f', 'docker-compose.yml', '-f', 'ci-compose.yml', 'run', 'test' ]
     env:
-      - "PWD=/workspace"
+      - "PWD=/home/you/rails-google-cloud-run-and-tasks"
       - "PROJECT_ID=${PROJECT_ID}"
       - "_TAG_SAFE_BRANCH=${_TAG_SAFE_BRANCH}"
       - "GIT_BRANCH=${BRANCH_NAME}"
