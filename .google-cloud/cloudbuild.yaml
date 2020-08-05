@@ -3,9 +3,9 @@
 # - https://cloud.google.com/cloud-build/docs/configuring-builds/substitute-variable-values
 # - https://cloud.google.com/cloud-build/docs/configuring-builds/use-bash-and-bindings-in-substitutions
 steps:
-  - id: 'set-tmp-permissions'
+  - id: 'set-workspace-owner'
     name: 'bash'
-    args: [ 'chmod', '-R', 'a+w', '/workspace/tmp' ]
+    args: [ 'chown', '-R', '1000:1000', '/workspace' ]
     waitFor: [ '-' ]
 
   - id: 'build-test-image'
@@ -28,4 +28,4 @@ steps:
       - "GIT_BRANCH=${BRANCH_NAME}"
       - "GIT_COMMIT_SHA=${COMMIT_SHA}"
       - "GIT_COMMIT_SHORT_SHA=${SHORT_SHA}"
-    waitFor: [ 'set-tmp-permissions', 'build-test-image' ]
+    waitFor: [ 'set-workspace-owner', 'build-test-image' ]
