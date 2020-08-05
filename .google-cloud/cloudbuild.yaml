@@ -16,6 +16,7 @@ steps:
       - --cache=true
       - --cache-ttl=72h
       - --target=testing
+      - --skip-unused-stages=true
     waitFor: [ 'set-workspace-owner' ]
 
   - id: 'run-rspec-tests'
@@ -38,6 +39,7 @@ steps:
       - --cache=true
       - --cache-ttl=72h
       - --target=builder
+      - --skip-unused-stages=true
     waitFor: [ 'build-test-image' ]
 
   - id: 'build-release'
@@ -48,4 +50,5 @@ steps:
       - --cache=true
       - --cache-ttl=72h
       - --target=release
+      - --skip-unused-stages=true
     waitFor: [ 'build-release-builder' ]
