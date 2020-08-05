@@ -10,20 +10,13 @@ steps:
       - --cache=true
       - --cache-ttl=72h
       - --target=testing
-
-  - id: 'check-workspace'
-    name: 'bash'
-    args: [ 'pwd' ]
-
-  - id: 'list-workspace-contents'
-    name: 'bash'
-    waitFor: [ 'check-workspace' ]
-    args: [ 'ls', '-lah' ]
+    waitFor: [ '-' ]
 
   - id: 'run-rspec-tests'
     name: 'gcr.io/$PROJECT_ID/docker-compose'
     args: [ '-f', 'docker-compose.yml', '-f', 'ci-compose.yml', 'run', 'test' ]
     env:
+      - "PWD=/workspace"
       - "PROJECT_ID=${PROJECT_ID}"
       - "_TAG_SAFE_BRANCH=${_TAG_SAFE_BRANCH}"
       - "GIT_BRANCH=${BRANCH_NAME}"
