@@ -11,10 +11,14 @@ steps:
       - --cache-ttl=72h
       - --target=testing
 
-  - id: 'check-docker-images'
-    name: 'gcr.io/cloud-builders/docker'
-    waitFor: [ 'build-test-image' ]
-    args: [ 'image', 'ls' ]
+  - id: 'check-workspace'
+    name: 'bash'
+    args: [ 'pwd' ]
+
+  - id: 'list-workspace-contents'
+    name: 'bash'
+    waitFor: [ 'check-workspace' ]
+    args: [ 'ls', '-lah' ]
 
   - id: 'run-rspec-tests'
     name: 'gcr.io/$PROJECT_ID/docker-compose'
