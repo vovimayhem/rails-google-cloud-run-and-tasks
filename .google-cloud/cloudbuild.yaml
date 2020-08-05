@@ -10,15 +10,18 @@ steps:
       - --cache=true
       - --cache-ttl=72h
       - --target=testing
-      - --build-arg=DEVELOPER_UID=1001
-      - --build-arg=DEVELOPER_GID=1001
-      - --build-arg=DEVELOPER_USERNAME=vov
+
+  - id: 'check-docker-images'
+    name: 'gcr.io/cloud-builders/docker'
+    waitFor: [ 'build-test-image' ]
+    args: [ 'image', 'ls' ]
 
   - id: 'run-rspec-tests'
-    name: 'docker/compose:1.26.2'
+    name: 'gcr.io/$PROJECT_ID/docker-compose'
     args: [ '-f', 'docker-compose.yml', '-f', 'ci-compose.yml', 'run', 'test' ]
     env:
-      - "GOOGLE_CLOUD_PROJECT=${PROJECT_ID}"
+      - "PROJECT_ID=${PROJECT_ID}"
+      - "_TAG_SAFE_BRANCH=${_TAG_SAFE_BRANCH}"
       - "GIT_BRANCH=${BRANCH_NAME}"
       - "GIT_COMMIT_SHA=${COMMIT_SHA}"
-    waitFor: ['build-test-image']
+    waitFor: [ 'build-test-image' ]
