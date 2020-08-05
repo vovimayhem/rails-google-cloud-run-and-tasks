@@ -26,19 +26,19 @@ services:
       # Mount the test coverage volume, so the results persist in this volume:
       - test_coverage:${PWD}/coverage
 
-    build: &app_ci_build
-      context: .
-      target: testing
-      args: &app_ci_build_args
-        DEVELOPER_UID: ${UID:-1000}
-        DEVELOPER_GID: ${GID:-1000}
-        DEVELOPER_USERNAME: ${USER:-you}
-      # cache_from:
-      #   # The order of this list will be considered by the `docker-image-manager` script!
-      #   # Also, be sure to include the service image name in this list as well.
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${GIT_COMMIT_SHORT_SHA:-latest} # The resulting image must also be on cache_from!
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${TAG_SAFE_BRANCH}
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing
+    # build: &app_ci_build
+    #   context: .
+    #   target: testing
+    #   args: &app_ci_build_args
+    #     DEVELOPER_UID: ${UID:-1000}
+    #     DEVELOPER_GID: ${GID:-1000}
+    #     DEVELOPER_USERNAME: ${USER:-you}
+    #   # cache_from:
+    #   #   # The order of this list will be considered by the `docker-image-manager` script!
+    #   #   # Also, be sure to include the service image name in this list as well.
+    #   #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${GIT_COMMIT_SHORT_SHA:-latest} # The resulting image must also be on cache_from!
+    #   #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${TAG_SAFE_BRANCH}
+    #   #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing
     command: rspec
     environment:
       HOME: ${PWD}
@@ -55,25 +55,25 @@ services:
 
   builder:
     image: gcr.io/${PROJECT_ID}/gcp-rails-demo:builder-${_TAG_SAFE_BRANCH}
-    build:
-      <<: *app_ci_build
-      target: builder
-      # cache_from:
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder-${GIT_COMMIT_SHORT_SHA:-latest}
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${GIT_COMMIT_SHORT_SHA:-latest}
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder-${TAG_SAFE_BRANCH}
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${TAG_SAFE_BRANCH}
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing
+    # build:
+    #   <<: *app_ci_build
+    #   target: builder
+    #   # cache_from:
+    #   #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder-${GIT_COMMIT_SHORT_SHA:-latest}
+    #   #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${GIT_COMMIT_SHORT_SHA:-latest}
+    #   #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder-${TAG_SAFE_BRANCH}
+    #   #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${TAG_SAFE_BRANCH}
+    #   #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder
+    #   #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing
 
   release:
     image: gcr.io/${PROJECT_ID}/gcp-rails-demo:${_TAG_SAFE_BRANCH}
-    build:
-      <<: *app_ci_build
-      target: release
-      args:
-        <<: *app_ci_build_args
-        SOURCE_BRANCH: ${GIT_BRANCH}
-        SOURCE_COMMIT: ${GIT_COMMIT_SHA}
-        BUILD_DATE: ${BUILD_DATE}
-        IMAGE_NAME: "vovimayhem/rails-google-cloud-run-and-tasks"
+    # build:
+    #   <<: *app_ci_build
+    #   target: release
+    #   args:
+    #     <<: *app_ci_build_args
+    #     SOURCE_BRANCH: ${GIT_BRANCH}
+    #     SOURCE_COMMIT: ${GIT_COMMIT_SHA}
+    #     BUILD_DATE: ${BUILD_DATE}
+    #     IMAGE_NAME: "vovimayhem/rails-google-cloud-run-and-tasks"
