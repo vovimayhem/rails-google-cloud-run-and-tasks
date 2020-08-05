@@ -48,11 +48,11 @@ group :development do
   # Support for Ruby IDE tools - including "Ruby for Visual Studio Code"
   gem 'debase', '~> 0.2.4.1'
   gem 'reek', '~> 6.0', '>= 6.0.1'
-  gem 'rubocop', '~> 0.86.0'
+  gem 'rubocop', '~> 0.88.0'
   gem 'ruby-debug-ide', '~> 0.7.2'
 
   # IDE tools for code completion, inline documentation, and static analysis
-  gem 'solargraph', '~> 0.39.11'
+  gem 'solargraph', '~> 0.39.12'
 end
 
 group :test do
