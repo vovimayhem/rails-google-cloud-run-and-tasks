@@ -7,6 +7,7 @@ steps:
     name: 'gcr.io/kaniko-project/executor:latest'
     args:
       - --destination=gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${_TAG_SAFE_BRANCH}
+      - --destination=gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${SHORT_SHA}
       - --cache=true
       - --cache-ttl=72h
       - --target=testing
@@ -21,4 +22,5 @@ steps:
       - "_TAG_SAFE_BRANCH=${_TAG_SAFE_BRANCH}"
       - "GIT_BRANCH=${BRANCH_NAME}"
       - "GIT_COMMIT_SHA=${COMMIT_SHA}"
+      - "GIT_COMMIT_SHORT_SHA=${SHORT_SHA}"
     waitFor: [ 'build-test-image' ]

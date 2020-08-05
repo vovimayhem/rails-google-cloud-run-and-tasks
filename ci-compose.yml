@@ -15,7 +15,7 @@ volumes:
 
 services:
   test:
-    image: gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${_TAG_SAFE_BRANCH}
+    image: gcr.io/${PROJECT_ID}/gcp-rails-demo:testing-${GIT_COMMIT_SHORT_SHA}
 
     entrypoint: ${PWD}/bin/dev-entrypoint.sh
     working_dir: ${PWD}
@@ -54,7 +54,7 @@ services:
       CC_TEST_REPORTER_ID: 03a1840b0c65eac80ee35ecac9f632736b55acfcc0c598b8542963b915048a73
 
   builder:
-    image: gcr.io/${PROJECT_ID}/gcp-rails-demo:builder-${_TAG_SAFE_BRANCH}
+    image: gcr.io/${PROJECT_ID}/gcp-rails-demo:builder-${GIT_COMMIT_SHORT_SHA}
     # build:
     #   <<: *app_ci_build
     #   target: builder
@@ -67,7 +67,7 @@ services:
     #   #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing
 
   release:
-    image: gcr.io/${PROJECT_ID}/gcp-rails-demo:${_TAG_SAFE_BRANCH}
+    image: gcr.io/${PROJECT_ID}/gcp-rails-demo:${GIT_COMMIT_SHORT_SHA}
     # build:
     #   <<: *app_ci_build
     #   target: release
