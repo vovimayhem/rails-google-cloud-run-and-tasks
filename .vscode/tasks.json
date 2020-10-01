@@ -22,6 +22,12 @@
           "endsPattern": "^.+:\\s+(Compiled successfully|Failed to compile)\\.$"
         }
       }
+    },
+    {
+      "label": "Start Ngrok",
+      "type": "shell",
+      "isBackground": true,
+      "command": "ngrok http 3000",
     }
   ]
 }
