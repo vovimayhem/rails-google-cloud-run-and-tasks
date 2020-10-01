@@ -31,5 +31,8 @@ module RailsGoogleCloudRunAndTasks
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Configure 'cloudtasker' as the queuing backend for Active Job
+    config.active_job.queue_adapter = :cloudtasker
   end
 end
