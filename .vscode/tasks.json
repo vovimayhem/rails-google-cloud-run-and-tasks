@@ -28,6 +28,7 @@
       "type": "shell",
       "isBackground": true,
       "command": "ngrok http 3000",
+      "problemMatcher": []
     }
   ]
 }
