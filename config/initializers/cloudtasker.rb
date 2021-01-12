@@ -6,7 +6,7 @@ Cloudtasker.configure do |config|
   #
   # config.gcp_location_id = 'us-east1'
   config.gcp_project_id = ENV.fetch 'GOOGLE_CLOUD_PROJECT', 'some-project'
-  # config.gcp_queue_prefix = ENV.fetch 'CLOUDTASKER_QUEUE_PREFIX', 'my-app'
+  config.gcp_queue_prefix = ENV.fetch 'CLOUDTASKER_QUEUE_PREFIX', 'my-app'
 
   #
   # Domain
