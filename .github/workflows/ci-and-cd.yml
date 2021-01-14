@@ -1,0 +1,50 @@
+name: CI & CD
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test_build:
+    name: Build Test Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.x'
+
+      - name: Add CI/CD scripts to system path
+        run: echo "${GITHUB_WORKSPACE}/.github/workflows/bin" >> $GITHUB_PATH
+
+      - name: Normalize env vars
+        run: normalize-env-vars >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+          ${{ runner.os }}-buildx-
+
+      - name: Build Test Image
+        run: ci-compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1 test
+        env:
+          # Configures docker-compose to use Docker CLI to build the image:
+          COMPOSE_DOCKER_CLI_BUILD: 1
+          # Configures Docker CLI to use BuildKit to build the image:
+          DOCKER_BUILDKIT: 1
