@@ -202,8 +202,18 @@ jobs:
             SOURCE_COMMIT=${{env.GIT_COMMIT_SHA}}
             IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
 
-      - name: Image digest
-        run: echo ${{ steps.build_release_image.outputs.digest }}
+      - name: Generate Release Image Digest File
+        run: |
+          echo ${{ steps.build_release_image.outputs.digest }} > /tmp/release-image-digest.txt;
+          cat /tmp/release-image-digest.txt
+
+      # Used to deploy the image using the SHA256 in the deploy job:
+      - name: Persist Release Image Digest File
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-image-digest
+          path: /tmp/release-image-digest.txt
+          retention-days: 1
 
   deploy:
     name: Deploy
@@ -217,6 +227,14 @@ jobs:
           service_account_key: ${{ secrets.DEPLOY_GOOGLE_APPLICATION_CREDENTIALS }}
           export_default_credentials: true
 
+      - name: Download Release Image Digest File
+        uses: actions/download-artifact@v2
+        with:
+          name: release-image-digest
+
+      - name: Export Release Image Digest to ENV
+        run: echo "RELEASE_IMAGE_DIGEST=$(cat /tmp/release-image-digest.txt)" >> $GITHUB_ENV
+
       - name: Deploy to Cloud Run
         run: |-
           gcloud run deploy gcp-demo \
@@ -224,4 +242,4 @@ jobs:
             --region us-central1 \
             --allow-unauthenticated \
             --service-account=${{ secrets.DEMO_SERVICE_ACCOUNT }} \
-            --image gcr.io/icalia-devops/rails-google-cloud-run-and-tasks@${{ steps.build_release_image.outputs.digest }}
+            --image gcr.io/icalia-devops/rails-google-cloud-run-and-tasks@${{ env.RELEASE_IMAGE_DIGEST }}
