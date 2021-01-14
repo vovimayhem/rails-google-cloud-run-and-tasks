@@ -16,7 +16,7 @@ services:
         DEVELOPER_USERNAME: ${USER:-you}
         APP_PATH: ${PWD:-/srv/rails-google-cloud-run-and-tasks}
 
-    entrypoint: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/bin/dev-entrypoint.sh
+    entrypoint: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/bin/dev-entrypoint
 
     volumes:
       # Mount the app code into the app containers at the "$HOME/prex-messaging"

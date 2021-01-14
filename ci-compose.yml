@@ -17,7 +17,7 @@ volumes:
 services:
   tests:
     image: vovimayhem/rails-google-cloud-run-and-tasks:testing-${GIT_COMMIT_SHORT_SHA:-latest}
-    entrypoint: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/bin/dev-entrypoint.sh
+    entrypoint: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/bin/dev-entrypoint
     build: &app_ci_build
       context: .
       target: testing
