@@ -203,16 +203,14 @@ jobs:
             IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
 
       - name: Generate Release Image Digest File
-        run: |
-          echo ${{ steps.build_release_image.outputs.digest }} > /tmp/release-image-digest.txt;
-          cat /tmp/release-image-digest.txt
+        run: echo ${{ steps.build_release_image.outputs.digest }} > release-image-digest.txt
 
       # Used to deploy the image using the SHA256 in the deploy job:
       - name: Persist Release Image Digest File
         uses: actions/upload-artifact@v2
         with:
           name: release-image-digest
-          path: /tmp/release-image-digest.txt
+          path: release-image-digest.txt
           retention-days: 1
 
   deploy:
@@ -233,7 +231,7 @@ jobs:
           name: release-image-digest
 
       - name: Export Release Image Digest to ENV
-        run: echo "RELEASE_IMAGE_DIGEST=$(cat /tmp/release-image-digest.txt)" >> $GITHUB_ENV
+        run: echo "RELEASE_IMAGE_DIGEST=$(cat release-image-digest.txt)" >> $GITHUB_ENV
 
       - name: Deploy to Cloud Run
         run: |-
