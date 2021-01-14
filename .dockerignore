@@ -23,10 +23,12 @@ stack.yml
 log/*.log
 
 # Ignore temporary files:
-tmp/
+tmp/**/*
+!tmp/.keep
 !tmp/cache/.keep
 !tmp/pids/.keep
 !tmp/sockets/.keep
+!tmp/storage/.keep
 
 # Ignore OS artifacts:
 **/.DS_Store
