@@ -12,7 +12,7 @@ on:
 
 jobs:
   test_build:
-    name: Build Test Image
+    name: Build Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -39,7 +39,7 @@ jobs:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
-          ${{ runner.os }}-buildx-
+            ${{ runner.os }}-buildx-
 
       - name: Build Test Image
         run: ci-compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1 test
