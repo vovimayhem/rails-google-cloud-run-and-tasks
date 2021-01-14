@@ -11,7 +11,7 @@ on:
       - main
 
 jobs:
-  test_build:
+  build_test_image:
     name: Build Test Image
     runs-on: ubuntu-latest
     steps:
@@ -69,10 +69,10 @@ jobs:
       - name: List available Images
         run: docker image ls
   
-  testing:
+  run_tests:
     name: Testing
     runs-on: ubuntu-latest
-    needs: [build_images]
+    needs: [build_test_image]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -133,10 +133,10 @@ jobs:
           # Configures Docker CLI to use BuildKit to build the image:
           DOCKER_BUILDKIT: 1
 
-  release_build:
+  build_release_image:
     name: Build Release Image
     runs-on: ubuntu-latest
-    needs: [test_build]
+    needs: [build_test_image]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
