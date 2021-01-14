@@ -14,10 +14,14 @@ build_date = Time.now.strftime('%Y-%m-%dT%H:%M:%S%z')
 
 # See https://help.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
 
+current_user = Etc.getpwuid
+
 puts "BUILD_DATE=#{build_date}"
 puts "GIT_COMMIT_SHA=#{git_sha}"
 puts "GIT_COMMIT_SHORT_SHA=#{git_short_sha}"
 puts "GIT_COMMITTED_AT=#{git_committed_at}"
 puts "GIT_BRANCH=#{git_branch}"
 puts "TAG_SAFE_BRANCH=#{docker_tag_name_from_branch}"
-puts "UID=#{Etc.getpwuid.uid}"
+puts "UID=#{current_user.uid}"
+puts "USER=#{current_user.name}"
+puts "PWD=#{Dir.getwd}"
