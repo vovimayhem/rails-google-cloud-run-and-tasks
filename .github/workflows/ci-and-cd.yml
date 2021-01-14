@@ -44,8 +44,8 @@ jobs:
       # - name: Build
       #   run: docker buildx bake -f ci-compose.yml
 
-      - name: Test
-        id: docker_test
+      - name: Build
+        id: docker_build
         uses: docker/build-push-action@v2
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -53,6 +53,10 @@ jobs:
           file: ./Dockerfile
           target: testing
           push: false
+
+          # Make the build result to be available in the Docker client:
+          load: true
+
           platforms: linux/amd64
           tags: |
             vovimayhem/rails-google-cloud-run-and-tasks:testing-latest
