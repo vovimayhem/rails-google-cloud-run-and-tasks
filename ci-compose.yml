@@ -16,7 +16,7 @@ volumes:
 
 services:
   tests:
-    image: vovimayhem/rails-google-cloud-run-and-tasks${DOCKER_IMAGE_VARIANT:-:testing-latest}
+    image: vovimayhem/rails-google-cloud-run-and-tasks:testing-${GIT_COMMIT_SHORT_SHA:-latest}
     entrypoint: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/bin/dev-entrypoint
     build: &app_ci_build
       context: .
@@ -51,7 +51,7 @@ services:
       CC_TEST_REPORTER_ID: 03a1840b0c65eac80ee35ecac9f632736b55acfcc0c598b8542963b915048a73
 
   release:
-    image: vovimayhem/rails-google-cloud-run-and-tasks${DOCKER_IMAGE_VARIANT:-:latest}
+    image: vovimayhem/rails-google-cloud-run-and-tasks:${GIT_COMMIT_SHORT_SHA:-latest}
     build:
       <<: *app_ci_build
       target: release
