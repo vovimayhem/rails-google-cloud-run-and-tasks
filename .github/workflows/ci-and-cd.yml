@@ -47,7 +47,7 @@ jobs:
       - name: Build
         id: docker_build
         uses: docker/build-push-action@v2
-        with: &test_build_args
+        with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: ./Dockerfile
@@ -110,7 +110,26 @@ jobs:
         id: load_test_image
         uses: docker/build-push-action@v2
         with:
-          <<: *test_build_args
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: ./Dockerfile
+          target: testing
+          push: false
+
+          # Make the build result to be available in the Docker client:
+          load: true
+
+          platforms: linux/amd64
+          tags: |
+            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{env.GIT_COMMIT_SHORT_SHA}}
+            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{env.TAG_SAFE_BRANCH}}
+            vovimayhem/rails-google-cloud-run-and-tasks:testing-latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          build-args: |
+            DEVELOPER_UID=${{env.UID}}
+            DEVELOPER_USERNAME=${{env.USER}}
+            APP_PATH=${{env.PWD}}
 
       - name: List available Images
         run: docker image ls
