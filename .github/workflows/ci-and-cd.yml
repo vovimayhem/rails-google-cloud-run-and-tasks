@@ -206,7 +206,7 @@ jobs:
         run: echo ${{ steps.build_release_image.outputs.digest }}
 
   deploy:
-    name: Build Release Image
+    name: Deploy
     runs-on: ubuntu-latest
     needs: [run_tests, build_release_image]
     steps:
