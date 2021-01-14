@@ -53,7 +53,8 @@ jobs:
           platforms: linux/amd64
           
           tags: |
-            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{env.GIT_COMMIT_SHORT_SHA}}
+            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.GIT_COMMIT_SHORT_SHA }}
+            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.TAG_SAFE_BRANCH }}
             vovimayhem/rails-google-cloud-run-and-tasks:testing-latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
@@ -115,17 +116,18 @@ jobs:
 
           platforms: linux/amd64
           tags: |
-            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{env.GIT_COMMIT_SHORT_SHA}}
+            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.GIT_COMMIT_SHORT_SHA }}
+            vovimayhem/rails-google-cloud-run-and-tasks:testing-:${{ env.TAG_SAFE_BRANCH }}
             vovimayhem/rails-google-cloud-run-and-tasks:testing-latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           build-args: |
-            APP_PATH=${{env.PWD}}
-            DEVELOPER_UID=${{env.UID}}
-            BUILD_DATE=${{env.BUILD_DATE}}
-            DEVELOPER_USERNAME=${{env.USER}}
-            SOURCE_BRANCH=${{env.GIT_BRANCH}}
-            SOURCE_COMMIT=${{env.GIT_COMMIT_SHA}}
+            APP_PATH=${{ env.PWD }}
+            DEVELOPER_UID=${{ env.UID} }
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            DEVELOPER_USERNAME=${{ env.USER }}
+            SOURCE_BRANCH=${{ env.GIT_BRANCH }}
+            SOURCE_COMMIT=${{ env.GIT_COMMIT_SHA }}
             IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
 
       - name: Run Tests
@@ -177,6 +179,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: List directory 1
+        run: ls -lah
+
       - name: Build
         id: build_release_image
         uses: docker/build-push-action@v2
@@ -190,17 +195,21 @@ jobs:
           platforms: linux/amd64
           tags: |
             gcr.io/icalia-devops/rails-google-cloud-run-and-tasks:${{ env.GIT_COMMIT_SHORT_SHA }}
+            gcr.io/icalia-devops/rails-google-cloud-run-and-tasks:${{ env.TAG_SAFE_BRANCH }}
             gcr.io/icalia-devops/rails-google-cloud-run-and-tasks:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           build-args: |
-            APP_PATH=${{env.PWD}}
-            DEVELOPER_UID=${{env.UID}}
-            BUILD_DATE=${{env.BUILD_DATE}}
-            DEVELOPER_USERNAME=${{env.USER}}
-            SOURCE_BRANCH=${{env.GIT_BRANCH}}
-            SOURCE_COMMIT=${{env.GIT_COMMIT_SHA}}
+            APP_PATH=${{ env.PWD }}
+            DEVELOPER_UID=${{ env.UID} }
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            DEVELOPER_USERNAME=${{ env.USER }}
+            SOURCE_BRANCH=${{ env.GIT_BRANCH }}
+            SOURCE_COMMIT=${{ env.GIT_COMMIT_SHA }}
             IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
+
+      - name: List directory 2
+        run: ls -lah
 
       - name: Generate Release Image Digest File
         run: echo ${{ steps.build_release_image.outputs.digest }} > release-image-digest.txt
