@@ -123,7 +123,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
           build-args: |
             APP_PATH=${{ env.PWD }}
-            DEVELOPER_UID=${{ env.UID} }
+            DEVELOPER_UID=${{ env.UID }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             DEVELOPER_USERNAME=${{ env.USER }}
             SOURCE_BRANCH=${{ env.GIT_BRANCH }}
@@ -201,7 +201,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
           build-args: |
             APP_PATH=${{ env.PWD }}
-            DEVELOPER_UID=${{ env.UID} }
+            DEVELOPER_UID=${{ env.UID }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             DEVELOPER_USERNAME=${{ env.USER }}
             SOURCE_BRANCH=${{ env.GIT_BRANCH }}
