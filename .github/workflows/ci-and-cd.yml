@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Build Test Image
-        run: ci-compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1 test
+        run: ci-compose build --pull --build-arg BUILDKIT_INLINE_CACHE=1 tests
         env:
           # Configures docker-compose to use Docker CLI to build the image:
           COMPOSE_DOCKER_CLI_BUILD: 1
