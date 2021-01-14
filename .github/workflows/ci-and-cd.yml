@@ -53,9 +53,10 @@ jobs:
           file: ./Dockerfile
           target: testing
           push: false
+          platforms: linux/amd64
           tags: |
             vovimayhem/rails-google-cloud-run-and-tasks:testing-latest
-            vovimayhem/rails-google-cloud-run-and-tasks:testing-${GIT_COMMIT_SHORT_SHA}
+            vovimayhem/rails-google-cloud-run-and-tasks:testing-${GITHUB_SHA::8}
 
       - name: List available Images
         run: docker image ls
