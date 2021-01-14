@@ -25,7 +25,7 @@
   // contents of later files can override values set in previous ones.
   "dockerComposeFile": [
     "../docker-compose.yml", // The compose file with the common services
-    "docker-compose.yml"     // Special for the VSCode dev container
+    "vs-compose.yml"     // Special for the VSCode dev container
   ],
 
   // Required. The name of the service VS Code should connect to once running.
