@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'on_container/dev/rails'
+
+set_given_or_default_command
+
+on_setup_lock_acquired do
+  ensure_project_gems_are_installed
+  ensure_project_node_packages_are_installed
+
+  remove_rails_pidfile if rails_server?
+end if command_requires_setup?
+
+execute_given_or_default_command

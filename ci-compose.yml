@@ -11,60 +11,44 @@
 version: '3.7'
 
 volumes:
+  node_modules:
   test_coverage:
 
 services:
-  test:
-    image: vovimayhem/rails-google-cloud-run-and-tasks:testing
-
-    entrypoint: ${PWD}/bin/dev-entrypoint.sh
-    working_dir: ${PWD}
-    volumes:
-      # Mount the app code into the app containers at the "/usr/src" folder:
-      - .:${PWD}
-
-      # Mount the test coverage volume, so the results persist in this volume:
-      - test_coverage:${PWD}/coverage
-
+  tests:
+    image: vovimayhem/rails-google-cloud-run-and-tasks:testing-${GIT_COMMIT_SHORT_SHA:-latest}
+    entrypoint: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/bin/dev-entrypoint
     build: &app_ci_build
       context: .
       target: testing
       args: &app_ci_build_args
+        BUILDKIT_INLINE_CACHE: "1"
         DEVELOPER_UID: ${UID:-1000}
-        DEVELOPER_GID: ${GID:-1000}
         DEVELOPER_USERNAME: ${USER:-you}
-      # cache_from:
-      #   # The order of this list will be considered by the `docker-image-manager` script!
-      #   # Also, be sure to include the service image name in this list as well.
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${GIT_COMMIT_SHORT_SHA:-latest} # The resulting image must also be on cache_from!
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${TAG_SAFE_BRANCH}
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing
+        APP_PATH: ${PWD:-/srv/rails-google-cloud-run-and-tasks}
+    depends_on:
+      - chrome
     command: rspec
+    volumes:
+      # Mount the app code into the app container:
+      - .:${PWD:-/srv/rails-google-cloud-run-and-tasks}
+
+      # Mount the test coverage volume, so the results persist in this volume:
+      - test_coverage:${PWD:-/srv/rails-google-cloud-run-and-tasks}/coverage
+
+      # Replace the binded local node_modules folder with a docker volume:
+      - node_modules:${PWD:-/srv/rails-google-cloud-run-and-tasks}/node_modules
+
     environment:
-      HOME: ${PWD}
-      PATH: ${PWD}/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      RAILS_ENV: test
       
-      # LOOK! No RAILS_ENV/RACK_ENV setting!
-
-      NEW_RELIC_AGENT_ENABLED: "false"
-
+      CHROME_URL: http://chrome:3333
+      
       GIT_BRANCH: ${GIT_BRANCH}
       GIT_COMMIT_SHA: ${GIT_COMMIT_SHA}
       GIT_COMMITTED_AT: ${GIT_COMMITTED_AT}
-      CC_TEST_REPORTER_ID: 03a1840b0c65eac80ee35ecac9f632736b55acfcc0c598b8542963b915048a73
 
-  builder:
-    image: vovimayhem/rails-google-cloud-run-and-tasks:builder-${GIT_COMMIT_SHORT_SHA:-latest}
-    build:
-      <<: *app_ci_build
-      target: builder
-      # cache_from:
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder-${GIT_COMMIT_SHORT_SHA:-latest}
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${GIT_COMMIT_SHORT_SHA:-latest}
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder-${TAG_SAFE_BRANCH}
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing-${TAG_SAFE_BRANCH}
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:builder
-      #   - icalia-labs.registry-beta.semaphoreci.com/icalialabs/teams:testing
+      CC_TEST_REPORTER_ID: 03a1840b0c65eac80ee35ecac9f632736b55acfcc0c598b8542963b915048a73
 
   release:
     image: vovimayhem/rails-google-cloud-run-and-tasks:${GIT_COMMIT_SHORT_SHA:-latest}

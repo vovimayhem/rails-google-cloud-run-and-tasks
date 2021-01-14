@@ -3,7 +3,6 @@ version: "3.7"
 volumes:
   gem_bundle:
   node_modules:
-  vs_code_server:
 
 services:
   demo:
@@ -12,27 +11,24 @@ services:
       context: .
       target: development
       args:
+        BUILDKIT_INLINE_CACHE: "1"
         DEVELOPER_UID: ${UID:-1000}
-        DEVELOPER_GID: ${GID:-1000}
         DEVELOPER_USERNAME: ${USER:-you}
-    working_dir: ${PWD}
+        APP_PATH: ${PWD:-/srv/rails-google-cloud-run-and-tasks}
 
-    entrypoint: ${PWD}/bin/dev-entrypoint.sh
+    entrypoint: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/bin/dev-entrypoint
 
     volumes:
       # Mount the app code into the app containers at the "$HOME/prex-messaging"
       # folder:
-      - .:${PWD}:delegated
+      - .:${PWD:-/srv/rails-google-cloud-run-and-tasks}:delegated
 
       # After mounting the app code, this replaces (copies) the image's gem
       # bundle with a volume. We're doing this so we are not forced to re-build
       # the image over and over whenever we install a new gem.
       - gem_bundle:/usr/local/bundle
 
-      - node_modules:${PWD}/node_modules
-      
-      # Mount the VS Code server files:
-      - vs_code_server:/usr/src/.vscode-server
+      - node_modules:${PWD:-/srv/rails-google-cloud-run-and-tasks}/node_modules
 
     # Keep the stdin open, so we can attach to our app container's process
     # and do things such as byebug, etc:
@@ -60,10 +56,6 @@ services:
     # leave a YML anchor in case we need to override or add more variables if
     # needed on each app service:
     environment: &app_environment
-      # We'll set the HOME and PATH based on where we mounted the code:
-      HOME: ${PWD}
-      PATH: ${PWD}/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-
       # Rails config:
       RAILS_LOG_TO_STDOUT: "true"
 

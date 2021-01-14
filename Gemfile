@@ -22,6 +22,9 @@ gem 'jbuilder', '~> 2.7'
 # Use Active Model has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
+# Routines we use in containerized apps:
+gem 'on_container', '~> 0.0.9', require: false
+
 # Used to calculate PI in our test job:
 gem 'gmp', '~> 0.7.43'
 

@@ -1,7 +1,5 @@
-# I: Runtime Stage: ============================================================
-# This is the stage where we build the runtime base image, which is used as the
-# common ancestor by the rest of the stages, and contains the minimal runtime
-# dependencies required for the application to run:
+# Stage 1: Runtime =============================================================
+# The minimal package dependencies required to run the app in the release image:
 
 # Use the official Ruby 2.7.1 Slim Buster image as base:
 FROM ruby:2.7.1-slim-buster AS runtime
@@ -10,28 +8,25 @@ FROM ruby:2.7.1-slim-buster AS runtime
 # https://www.speedshop.co/2017/12/04/malloc-doubles-ruby-memory.html
 ENV MALLOC_ARENA_MAX="2"
 
-# We'll set the LANG encoding to be UTF-8 for special character support:
-ENV LANG C.UTF-8
-
-# We'll install the apt packages required for the app to run:
+# We'll install curl for later dependency package installation steps
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    apt-transport-https \
     ca-certificates \
     curl \
     openssl \
     tzdata \
  && rm -rf /var/lib/apt/lists/*
 
-# II: Testing stage: ======================================================
+# Stage 2: testing =============================================================
+# This stage will contain the minimal dependencies for the CI/CD environment to
+# run the test suite:
 
-# Continue from the "runtime" stage:
+# Use the "runtime" stage as base:
 FROM runtime AS testing
 
 # Install gnupg
 RUN apt-get update \
- && apt-get install -y --no-install-recommends gnupg \
- && rm -rf /var/lib/apt/lists/*
+ && apt-get install -y --no-install-recommends gnupg
 
 # Add nodejs debian LTS repo:
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
@@ -41,98 +36,101 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
  && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 
 # Install the app build system dependency packages:
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
     build-essential \
-    gnupg \
     git \
+    libpq-dev \
     nodejs \
-    sudo \
-    yarn \
- && rm -rf /var/lib/apt/lists/*
+    yarn
 
-# Build the su-exec executable - used to de-escalate from root on the final
-# releasable image, instead of sudo:
-RUN curl -o /usr/local/bin/su-exec.c https://raw.githubusercontent.com/ncopa/su-exec/master/su-exec.c \
- && gcc -Wall /usr/local/bin/su-exec.c -o/usr/local/bin/su-exec \
- && chown root:root /usr/local/bin/su-exec \
- && chmod 0755 /usr/local/bin/su-exec \
- && rm /usr/local/bin/su-exec.c
+# Receive the app path as an argument:
+ARG APP_PATH=/srv/rails-google-cloud-run-and-tasks
 
-# Receive the developer user's UID, GID and username:
+# Receive the developer user's UID and USER:
 ARG DEVELOPER_UID=1000
-ARG DEVELOPER_GID=${DEVELOPER_UID}
 ARG DEVELOPER_USERNAME=you
 
-# Set the developer's UID, GID and username as environment variables:
-ENV DEVELOPER_UID=${DEVELOPER_UID} \
-    DEVELOPER_GID=${DEVELOPER_GID} \
-    DEVELOPER_USERNAME=${DEVELOPER_USERNAME}
+# Replicate the developer user in the development image:
+RUN addgroup --gid ${DEVELOPER_UID} ${DEVELOPER_USERNAME} \
+ ;  useradd -r -m -u ${DEVELOPER_UID} --gid ${DEVELOPER_UID} \
+    --shell /bin/bash -c "Developer User,,," ${DEVELOPER_USERNAME}
 
-# Create the developer group and user:
-RUN addgroup --gid ${DEVELOPER_GID} ${DEVELOPER_USERNAME} \
- ; useradd -r -m -u ${DEVELOPER_UID} --gid ${DEVELOPER_GID} \
-   --shell /bin/bash -c "Developer User,,," ${DEVELOPER_USERNAME}
+# Ensure the developer user's home directory and APP_PATH are owned by him/her:
+# (A workaround to a side effect of setting WORKDIR before creating the user)
+RUN userhome=$(eval echo ~${DEVELOPER_USERNAME}) \
+ && chown -R ${DEVELOPER_USERNAME}:${DEVELOPER_USERNAME} $userhome \
+ && mkdir -p ${APP_PATH} \
+ && chown -R ${DEVELOPER_USERNAME}:${DEVELOPER_USERNAME} ${APP_PATH}
 
-# Add the developer user to the sudoers list:
-RUN echo "${DEVELOPER_USERNAME} ALL=(ALL) NOPASSWD:ALL" | sudo tee "/etc/sudoers.d/${DEVELOPER_USERNAME}"
+# Add the app's "bin/" directory to PATH:
+ENV PATH=${APP_PATH}/bin:$PATH
 
-# Set the developer user as the current user:
+# Set the app path as the working directory:
+WORKDIR ${APP_PATH}
+
+# Change to the developer user:
 USER ${DEVELOPER_USERNAME}
 
-# Set '/home/DEVELOPER_USERNAME/rails-google-cloud-run-and-tasks' path as the
-# working directory:
-WORKDIR /home/${DEVELOPER_USERNAME}/rails-google-cloud-run-and-tasks
-
-# Add the project's "bin" folder to $PATH:
-ENV PATH=/home/${DEVELOPER_USERNAME}/rails-google-cloud-run-and-tasks/bin:$PATH
-
-# Copy the project's Gemfile + lock:
-COPY --chown=${DEVELOPER_USERNAME} Gemfile* /home/${DEVELOPER_USERNAME}/rails-google-cloud-run-and-tasks/
+# Copy the project's Gemfile and Gemfile.lock files:
+COPY --chown=${DEVELOPER_USERNAME} Gemfile* ${APP_PATH}/
 
 # Install the gems in the Gemfile, except for the ones in the "development"
-# group, which shouldn't be required in order to run the tests with the leanest
+# group, which shouldn't be required in order to  run the tests with the leanest
 # Docker image possible:
 RUN bundle install --jobs=4 --retry=3 --without="development"
 
 # Copy the project's node package dependency lists:
-COPY --chown=${DEVELOPER_USERNAME} package.json yarn.lock /home/${DEVELOPER_USERNAME}/rails-google-cloud-run-and-tasks/
+COPY --chown=${DEVELOPER_USERNAME} package.json yarn.lock ${APP_PATH}/
 
 # Install the project's node packages:
 RUN yarn install
 
-# III: Development Stage: ======================================================
-# In this stage we'll install all the project's development libraries, and
-# the default development commands.
+# Stage 3: Development =========================================================
+# In this stage we'll add the packages, libraries and tools required in the
+# day-to-day development process.
 
-# Continue from the "testing" stage:
+# Use the "testing" stage as base:
 FROM testing AS development
 
-# Add development-time dependencies:
-RUN sudo apt-get update \
- && sudo apt-get install -y --no-install-recommends \
-    openssh-client \
- && sudo rm -rf /var/lib/apt/lists/*
+# Receive the developer username again, as ARGS won't persist between stages on
+# non-buildkit builds:
+ARG DEVELOPER_USERNAME=you
 
-# Set the default command:
-CMD [ "rails", "server", "-b", "0.0.0.0" ]
+# Change to root user to install the development packages:
+USER root
 
-# Install the current project gems - they can be safely changed later during the
-# development session via `bundle install` or `bundle update`:
+# Install sudo, along with any other tool required at development phase:
+RUN apt-get install -y --no-install-recommends sudo
+
+# Add the developer user to the sudoers list:
+RUN echo "${DEVELOPER_USERNAME} ALL=(ALL) NOPASSWD:ALL" | tee "/etc/sudoers.d/${DEVELOPER_USERNAME}"
+
+# Change back to the developer user:
+USER ${DEVELOPER_USERNAME}
+
+# Install the gems in the Gemfile, this time including the previously ignored
+# "development" gems - We'll need to delete the bundler config, as it currently
+# belongs to "root":
 RUN bundle install --jobs=4 --retry=3 --with="development"
 
-# IV: Builder stage: ===========================================================
+# Put the `node_modules/.keep` file, to prevent Git from thinking it was removed
+RUN touch node_modules/.keep
+
+# Stage 4: Builder =============================================================
 # In this stage we'll add the rest of the code, compile assets, and perform a 
 # cleanup for the releasable image.
 
-# Continue from the testing stage:
+# Use the "testing" stage as base:
 FROM testing AS builder
 
-# Copy the complete application code
-COPY --chown=${DEVELOPER_USERNAME} . /srv/rails-google-cloud-run-and-tasks
+# Receive the developer username and the app path arguments again, as ARGS
+# won't persist between stages on non-buildkit builds:
+ARG DEVELOPER_USERNAME=you
+ARG APP_PATH=/srv/rails-google-cloud-run-and-tasks
 
-# Set the working directory:
-WORKDIR /srv/rails-google-cloud-run-and-tasks
+# Copy the full contents of the project:
+COPY --chown=${DEVELOPER_USERNAME} . ${APP_PATH}/
 
 # Precompile the application assets:
 RUN export SECRET_KEY_BASE=10167c7f7654ed02b3557b05b88ece RAILS_ENV=production \
@@ -143,14 +141,17 @@ RUN export SECRET_KEY_BASE=10167c7f7654ed02b3557b05b88ece RAILS_ENV=production \
 # Remove installed gems that belong to the development & test groups -
 # we'll copy the remaining system gems into the deployable image on the next
 # stage:
-RUN bundle config without development test \
- && bundle clean --force \
- # Remove unneeded files (cached *.gem, *.o, *.c)
- && sudo rm -rf /usr/local/bundle/cache/*.gem \
- && sudo find /usr/local/bundle/gems/ -name "*.c" -delete \
- && sudo find /usr/local/bundle/gems/ -name "*.o" -delete
+RUN bundle config without development test && bundle clean --force
 
-# Remove files not used on release image:
+# Change to root, before performing the final cleanup:
+USER root
+
+# Remove unneeded gem cache files (cached *.gem, *.o, *.c):
+RUN rm -rf /usr/local/bundle/cache/*.gem \
+ && find /usr/local/bundle/gems/ -name "*.c" -delete \
+ && find /usr/local/bundle/gems/ -name "*.o" -delete
+
+# Remove project files not used on release image:
 RUN rm -rf \
     .rspec \
     Guardfile \
@@ -163,36 +164,39 @@ RUN rm -rf \
     bin/update \
     bin/dev-entrypoint.sh \
     config/spring.rb \
-    spec \
-    config/initializers/listen_patch.rb
+    node_modules \
+    config/initializers/listen_patch.rb \
+    tmp/cache/*
 
-# VI: Release stage: ===========================================================
+# Stage 5: Release =============================================================
 # In this stage, we build the final, releasable, deployable Docker image, which
 # should be smaller than the images generated on previous stages:
 
-# Continue from the runtime stage image:
+# Use the "runtime" stage as base:
 FROM runtime AS release
-
-# Set the default command:
-CMD [ "puma", "-e" , "production" ]
 
 # Copy the remaining installed gems from the "builder" stage:
 COPY --from=builder /usr/local/bundle /usr/local/bundle
 
-# Copy the su-exec executable:
-COPY --from=builder /usr/local/bin/su-exec /usr/local/bin/su-exec
+# Receive the app path argument again, as ARGS are not persisted between stages
+# on non-buildkit builds:
+ARG APP_PATH=/srv/rails-google-cloud-run-and-tasks
 
-# Copy from app code from the "builder" stage:
-COPY --from=builder --chown=nobody:nogroup /srv/rails-google-cloud-run-and-tasks /srv/rails-google-cloud-run-and-tasks
+# Copy the app code and compiled assets from the "builder" stage to the
+# final destination at /srv/rails-google-cloud-run-and-tasks:
+COPY --from=builder --chown=nobody:nogroup ${APP_PATH} /srv/rails-google-cloud-run-and-tasks
+
+# Set the container user to 'nobody':
+USER nobody
+
+# Set the RAILS and PORT default values:
+ENV HOME=/srv/rails-google-cloud-run-and-tasks RAILS_ENV=production PORT=3000
 
 # Set the installed app directory as the working directory:
 WORKDIR /srv/rails-google-cloud-run-and-tasks
 
-# Set the RAILS/RACK_ENV and PORT default values:
-ENV HOME=/srv/rails-google-cloud-run-and-tasks RAILS_ENV=production RACK_ENV=production PORT=3000
-
-# Set the container user to 'nobody':
-USER nobody
+# Set the default command:
+CMD [ "puma" ]
 
 # Add label-schema.org labels to identify the build info:
 ARG SOURCE_BRANCH="master"

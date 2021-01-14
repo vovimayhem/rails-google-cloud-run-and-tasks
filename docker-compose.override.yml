@@ -1,31 +1,49 @@
 version: "3.7"
 
 volumes:
-  gem_bundle: # Used to store the app's gems.
-  node_modules:
+  gem_bundle:  # Used to store the app's gem libraries...
+  node_modules: # Used to store the app's node modules...
 
 services:
-  test: &app
+  # We'll use this service to run the tests locally:
+  tests: &app
     image: vovimayhem/rails-google-cloud-run-and-tasks:development
     build:
       context: .
       target: development
       args:
+        BUILDKIT_INLINE_CACHE: "1"
         DEVELOPER_UID: ${UID:-1000}
-        DEVELOPER_GID: ${GID:-1000}
         DEVELOPER_USERNAME: ${USER:-you}
-    entrypoint: ${PWD}/bin/dev-entrypoint.sh
-    working_dir: ${PWD}
+        APP_PATH: ${PWD:-/srv/rails-google-cloud-run-and-tasks}
+    entrypoint: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/bin/dev-entrypoint
     volumes:
       # Mount the app code into the app containers at the "/usr/src" folder:
-      - .:${PWD}
+      - .:${PWD:-/srv/rails-google-cloud-run-and-tasks}
 
-      # After mounting the app code, this replaces (copies) the image's gem
-      # bundle with a volume. We're doing this so we are not forced to re-build
-      # the image over and over whenever we install a new gem.
+      # After mounting the app code, we will use volumes to store the project's
+      # gem libraries and node modules.
+
+      # In the case of the gem libraries, the "gem_bundle" volume will be
+      # initialized with the development image's installed gems. Gems can be
+      # added later during the development process without re-building the
+      # development image:
       - gem_bundle:/usr/local/bundle
 
-      - node_modules:${PWD}/node_modules
+      # In the case of the node modules, the "node_modules" volume will also be
+      # initialized with the development image's installed node modules. Also,
+      # notice how we're mounting the "node_modules" volume *inside* the mounted
+      # source code, effectively replacing any contents you might have on your
+      # project's "node_modules" folder in the container, offering several
+      # advantages:
+      # - We can run the frontend app either from the host (i.e. macOS) or
+      #   using containers without having the host & container clobber the npm
+      #   each other's packages, or avoid conflicting versions for macOS / Linux
+      # - Speeds up the npm operations on the container when running on
+      #   macOS/Windows, since a local volume bind on mac/win is significantly
+      #   slower than a Docker volume, and node module install is very sensitive
+      #   to I/O performance
+      - node_modules:${PWD:-/srv/rails-google-cloud-run-and-tasks}/node_modules
 
     # Keep the stdin open, so we can attach to our app container's process
     # and do things such as byebug, etc:
@@ -34,29 +52,42 @@ services:
     # Enable sending signals (CTRL+C, CTRL+P + CTRL+Q) into the container:
     tty: true
 
+    # Link to our postgres and redis services, so they can be visible from our
+    # app service containers:
+    depends_on:
+      - chrome
+
+    # The command we want to execute by default when running the container
     command: rspec
 
-    environment:
-      HOME: ${PWD}
-      PATH: ${PWD}/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      
-      # LOOK! No RAILS_ENV/RACK_ENV setting!
+    # Specify environment variables available for our app containers. We'll
+    # leave a YML anchor in case we need to override or add more variables if
+    # needed on each app service:
+    environment: &app_env
+      RAILS_LOG_TO_STDOUT: "true"
+
+      # Tells the test suite to use the "chrome" service instead of a local
+      # chrome install:
+      CHROME_URL: http://chrome:3333
 
   web:
     <<: *app
     command: rails server -b 0.0.0.0
     ports:
       - ${DEMO_WEB_PORT:-3000}:3000
+    depends_on:
+      - webpacker
+    environment:
+      <<: *app_env
+      WEBPACKER_DEV_SERVER_HOST: webpacker
 
-  # This container autocompiles, serves and live-reloads Webpack assets
-  # (including our ReactJS code) for our development environment. This service
-  # is proxied by the `web` container, so there is no need to publish ports for
-  # it:
   webpacker:
     <<: *app
+    command: webpack-dev-server
+    depends_on: []
     ports:
       - ${DEMO_WEBPACKER_DEV_SERVER_PORT:-3035}:3035
-    command: webpack-dev-server
     environment:
+      NODE_ENV: development
+      RAILS_ENV: development
       WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
-      WEBPACKER_DEV_SERVER_PUBLIC: 0.0.0.0:3035

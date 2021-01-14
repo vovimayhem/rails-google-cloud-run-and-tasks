@@ -11,21 +11,18 @@
 version: "3.7"
 
 services:
-  web: &app
+  web:
     image: vovimayhem/rails-google-cloud-run-and-tasks:latest
-
     build:
       context: .
       target: release
       args:
+        BUILDKIT_INLINE_CACHE: "1"
         DEVELOPER_UID: ${UID:-1000}
-        DEVELOPER_GID: ${GID:-1000}
         DEVELOPER_USERNAME: ${USER:-you}
-
+        APP_PATH: ${PWD:-/srv/rails-google-cloud-run-and-tasks}
     ports:
       - ${DEMO_WEB_PORT:-3000}:3000
-
-    command: puma -e production
 
     # Keep the stdin open, so we can attach to our app container's process
     # and do things such as byebug, etc:
@@ -38,13 +35,11 @@ services:
     # leave a YML anchor in case we need to override or add more variables if
     # needed on each app service:
     environment: &app_environment
-      # We'll set the RAILS_ENV and RACK_ENV environment variables to
-      # 'production', so our app containers will start in 'production' mode
-      # on this compose project:
-      RAILS_ENV: production
-      RACK_ENV: production
+      PORT: "3000"
+
+      RAILS_FORCE_SSL: "no"
       RAILS_LOG_TO_STDOUT: "true"
+      RAILS_SERVE_STATIC_FILES: "yes"
 
-      RAILS_SERVE_STATIC_FILES: "true"
-
+      # Make sure this secret key base doesn't make it to the production environment:
       SECRET_KEY_BASE: 689b84e285d8cf7f76feec2f21054b74fa014eefcf28da13c06749ca58edd3aafa9575d18da49e6d540d5444914e768b00f2541b3e2563a735d0fbd1a6739432
