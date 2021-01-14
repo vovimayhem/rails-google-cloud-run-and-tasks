@@ -63,9 +63,9 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           build-args: |
-            DEVELOPER_UID=${UID}
-            DEVELOPER_USERNAME=${USER}
-            APP_PATH=${PWD}
+            DEVELOPER_UID=${{env.UID}}
+            DEVELOPER_USERNAME=${{env.USER}}
+            APP_PATH=${{env.PWD}}
 
       
       - name: Image digest
