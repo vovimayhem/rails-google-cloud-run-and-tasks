@@ -23,10 +23,15 @@ stack.yml
 log/*.log
 
 # Ignore temporary files:
-tmp/**/*
-!tmp/.keep
-!tmp/cache/.keep
+tmp/*.txt
+
+tmp/pids/*
+tmp/cache/*
+tmp/sockets/*
+tmp/storage/*
+
 !tmp/pids/.keep
+!tmp/cache/.keep
 !tmp/sockets/.keep
 !tmp/storage/.keep
 
