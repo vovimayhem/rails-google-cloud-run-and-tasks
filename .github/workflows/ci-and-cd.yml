@@ -56,6 +56,11 @@ jobs:
           platforms: linux/amd64
           tags: |
             vovimayhem/rails-google-cloud-run-and-tasks:testing-latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+      
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
 
       - name: List available Images
         run: docker image ls
