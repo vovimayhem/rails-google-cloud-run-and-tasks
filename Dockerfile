@@ -41,6 +41,7 @@ RUN apt-get update \
     build-essential \
     git \
     libpq-dev \
+    openssh-client \
     nodejs \
     yarn
 
