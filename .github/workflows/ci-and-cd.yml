@@ -117,7 +117,7 @@ jobs:
           platforms: linux/amd64
           tags: |
             vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.GIT_COMMIT_SHORT_SHA }}
-            vovimayhem/rails-google-cloud-run-and-tasks:testing-:${{ env.TAG_SAFE_BRANCH }}
+            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.TAG_SAFE_BRANCH }}
             vovimayhem/rails-google-cloud-run-and-tasks:testing-latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
