@@ -37,9 +37,11 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: buildx-cache-${{ env.GIT_BRANCH }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-
+            buildx-cache-${{ env.GIT_BRANCH }}-
+            buildx-cache-main-
+            buildx-cache-
 
       - name: Build Image
         id: build_test_image
@@ -97,9 +99,11 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: buildx-cache-${{ env.GIT_BRANCH }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-
+            buildx-cache-${{ env.GIT_BRANCH }}-
+            buildx-cache-main-
+            buildx-cache-
 
       - name: Load Testing Image
         id: load_test_image
@@ -175,9 +179,11 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: buildx-cache-${{ env.GIT_BRANCH }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-
+            buildx-cache-${{ env.GIT_BRANCH }}-
+            buildx-cache-main-
+            buildx-cache-
 
       - name: List directory 1
         run: ls -lah
