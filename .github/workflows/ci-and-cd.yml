@@ -78,6 +78,7 @@ jobs:
             IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
 
       - name: Build Release Image
+        id: build_release_image
         uses: docker/build-push-action@v2
         with:
           builder: ${{ steps.buildx.outputs.name }}
