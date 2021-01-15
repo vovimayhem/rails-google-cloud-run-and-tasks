@@ -170,7 +170,6 @@ jobs:
         with:
           project_id: icalia-devops
           service_account_key: ${{ secrets.DEPLOY_GOOGLE_APPLICATION_CREDENTIALS }}
-          export_default_credentials: true
 
       - name: Authorize Docker push
         run: gcloud auth configure-docker
@@ -238,7 +237,6 @@ jobs:
         with:
           project_id: icalia-devops
           service_account_key: ${{ secrets.DEPLOY_GOOGLE_APPLICATION_CREDENTIALS }}
-          export_default_credentials: true
 
       - name: Download Release Image Digest File
         uses: actions/download-artifact@v2
