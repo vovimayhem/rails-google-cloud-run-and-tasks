@@ -73,6 +73,14 @@ services:
       GOOGLE_CLOUD_PROJECT: ${DEMO_GOOGLE_CLOUD_PROJECT:-example-gcp-project-id}
       GOOGLE_CLOUD_CREDENTIALS: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/google-cloud-credentials.json
 
+      # Google Cloud:
+      GOOGLE_CLOUD_PROJECT: ${DEMO_GOOGLE_CLOUD_PROJECT:-example-gcp-project-id}
+      GOOGLE_CLOUD_CREDENTIALS: ${PWD:-/rails-gcp-demo}/google-cloud-credentials.json
+
+      # Cloudtasker config:
+      CLOUDTASKER_QUEUE_PREFIX: ${DEMO_CLOUDTASKER_QUEUE_PREFIX:-my-app}
+      CLOUDTASKER_MODE: ${DEMO_CLOUDTASKER_MODE:-development}
+
   web:
     <<: *app
     command: rails server -b 0.0.0.0

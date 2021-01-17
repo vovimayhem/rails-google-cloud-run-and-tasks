@@ -111,6 +111,14 @@ RUN apt-get install -y --no-install-recommends \
 # Add the developer user to the sudoers list:
 RUN echo "${DEVELOPER_USERNAME} ALL=(ALL) NOPASSWD:ALL" | tee "/etc/sudoers.d/${DEVELOPER_USERNAME}"
 
+# Install ngrok - https://dl.equinox.io/ngrok/ngrok/stable/archive
+RUN export NGROK_VERSION=2.3.35 \
+ && export NGROK_SHA256=55df9c479b41a3b9b488458b5fb758df63001d14196a4126e3f669542c8727e9 \
+ && curl -o /tmp/ngrok.tar.gz "https://bin.equinox.io/a/jAq5uX8wfS8/ngrok-${NGROK_VERSION}-linux-amd64.tar.gz" \
+ && echo "${NGROK_SHA256}  /tmp/ngrok.tar.gz" | sha256sum -c - \
+ && sudo tar xvf /tmp/ngrok.tar.gz -C /usr/local/bin/ \
+ && rm -rf /tmp/ngrok.tar.gz
+
 # Change back to the developer user:
 USER ${DEVELOPER_USERNAME}
 

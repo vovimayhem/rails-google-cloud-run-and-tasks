@@ -62,11 +62,16 @@ services:
       DEBIAN_FRONTEND: dialog
       VSCODE_CONTEXT: "yes"
 
+      # Cloudtasker config:
+      CLOUDTASKER_QUEUE_PREFIX: ${DEMO_CLOUDTASKER_QUEUE_PREFIX:-my-app}
+      CLOUDTASKER_MODE: ${DEMO_CLOUDTASKER_MODE:-development}
+
       # Bind the webpack dev server service to 0.0.0.0 to allow connections from
       # the host:
       WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
       WEBPACKER_DEV_SERVER_PUBLIC: localhost:${DEMO_WEBPACKER_DEV_SERVER_PORT:-3035}
 
+      # Google Cloud:
       GOOGLE_CLOUD_PROJECT: ${DEMO_GOOGLE_CLOUD_PROJECT:-example-gcp-project-id}
       GOOGLE_CLOUD_CREDENTIALS: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/google-cloud-credentials.json
 

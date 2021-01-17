@@ -34,6 +34,12 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # Read secrets from Google Cloud Secret Manager
 gem 'google-cloud-secret_manager', '~> 1.0'
 
+# Background jobs for Ruby using Google Cloud Tasks.
+gem 'cloudtasker',
+    github: 'vovimayhem/cloudtasker',
+    branch: 'integration/active-job-and-rack-controller',
+    ref: 'dd41fab'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
