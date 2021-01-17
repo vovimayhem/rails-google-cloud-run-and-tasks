@@ -56,6 +56,7 @@ services:
     # app service containers:
     depends_on:
       - chrome
+      - postgres
 
     # The command we want to execute by default when running the container
     command: rspec
@@ -69,6 +70,8 @@ services:
       # Tells the test suite to use the "chrome" service instead of a local
       # chrome install:
       CHROME_URL: http://chrome:3333
+
+      DATABASE_URL: postgres://postgres:3x4mpl3P455w0rd@postgres:5432/?encoding=unicode
 
       GOOGLE_CLOUD_PROJECT: ${DEMO_GOOGLE_CLOUD_PROJECT:-example-gcp-project-id}
       GOOGLE_CLOUD_CREDENTIALS: ${PWD:-/srv/rails-google-cloud-demo}/google-cloud-credentials.json

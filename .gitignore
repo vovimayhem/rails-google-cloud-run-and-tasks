@@ -12,10 +12,11 @@
 /tmp/*
 !/log/.keep
 !/tmp/.keep
-!/tmp/cache/.keep
+
+# Ignore pidfiles, but keep the directory.
+/tmp/pids/*
+!/tmp/pids/
 !/tmp/pids/.keep
-!/tmp/sockets/.keep
-!/tmp/storage/.keep
 
 # Ignore uploaded files in development.
 /storage/*
@@ -80,9 +81,6 @@ coverage
 # Ignore Google Credentials
 google-cloud-credentials.json
 
-# Ignore OS artifacts:
-**/.DS_Store
-
 # Ignore the `.config` file that gets created from the app container:
 .config/
 
@@ -94,20 +92,9 @@ db/dumps/*
 
 # Ignore npm configuration
 .npm
+
 # Ignore the .ssh folder:
 .ssh
 
 # Ignore the .yarn folder:
 .yarn
-
-# ==============================================================================
-# Visual Studio Code Stuff:
-
-# Ignore .vscode-server, because when developing from within a container in
-# VSCode will try to add these to the Git project:
-.vscode-server
-
-# Ignore solargraph config
-.solargraph
-
-# ==============================================================================
