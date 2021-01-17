@@ -49,15 +49,3 @@ services:
       GIT_COMMITTED_AT: ${GIT_COMMITTED_AT}
 
       CC_TEST_REPORTER_ID: 03a1840b0c65eac80ee35ecac9f632736b55acfcc0c598b8542963b915048a73
-
-  release:
-    image: vovimayhem/rails-google-cloud-run-and-tasks:${GIT_COMMIT_SHORT_SHA:-latest}
-    build:
-      <<: *app_ci_build
-      target: release
-      args:
-        <<: *app_ci_build_args
-        SOURCE_BRANCH: ${GIT_BRANCH}
-        SOURCE_COMMIT: ${GIT_COMMIT_SHA}
-        BUILD_DATE: ${BUILD_DATE}
-        IMAGE_NAME: "vovimayhem/rails-google-cloud-run-and-tasks"
