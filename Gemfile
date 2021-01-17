@@ -23,13 +23,16 @@ gem 'jbuilder', '~> 2.7'
 # gem 'bcrypt', '~> 3.1.7'
 
 # Routines we use in containerized apps:
-gem 'on_container', '~> 0.0.9', require: false
+gem 'on_container', '~> 0.0.10', require: false
 
 # Used to calculate PI in our test job:
 gem 'gmp', '~> 0.7.43'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
+
+# Read secrets from Google Cloud Secret Manager
+gem 'google-cloud-secret_manager', '~> 1.0'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
