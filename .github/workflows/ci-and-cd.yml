@@ -9,7 +9,7 @@ on:
   pull_request:
     branches:
       - main
-#
+
 jobs:
   build_test_image:
     name: Build Test Image
@@ -74,11 +74,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-
-      - name: Setup Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.x'
 
       - name: Add CI/CD scripts to system path
         run: echo "${GITHUB_WORKSPACE}/.github/workflows/bin" >> $GITHUB_PATH
@@ -145,11 +140,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Setup Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.x'
-
       - name: Add CI/CD scripts to system path
         run: echo "${GITHUB_WORKSPACE}/.github/workflows/bin" >> $GITHUB_PATH
 
@@ -179,9 +169,6 @@ jobs:
             buildx-cache-main-
             buildx-cache-
 
-      - name: List directory 1
-        run: ls -lah
-
       - name: Build
         id: build_release_image
         uses: docker/build-push-action@v2
@@ -208,9 +195,6 @@ jobs:
             SOURCE_COMMIT=${{ env.GIT_COMMIT_SHA }}
             IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
 
-      - name: List directory 2
-        run: ls -lah
-
       - name: Generate Release Image Digest File
         run: echo ${{ steps.build_release_image.outputs.digest }} > release-image-digest.txt
 
@@ -229,11 +213,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-
-      - name: Setup Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.x'
 
       - name: Add CI/CD scripts to system path
         run: echo "${GITHUB_WORKSPACE}/.github/workflows/bin" >> $GITHUB_PATH
@@ -255,9 +234,12 @@ jobs:
       - name: Export Release Image Digest to ENV
         run: echo "RELEASE_IMAGE_DIGEST=$(cat release-image-digest.txt)" >> $GITHUB_ENV
 
+      - name: Cleanup the Google Cloud Run App Name
+        run:  echo "CLOUD_RUN_APP_NAME=$(echo 'rails-google-cloud-run-and-tasks-${{ env.TAG_SAFE_BRANCH }}' | cut -c 1-63)" >> $GITHUB_ENV
+
       - name: Deploy to Cloud Run
         run: |-
-          gcloud run deploy rails-google-cloud-run-and-tasks-${{ env.TAG_SAFE_BRANCH }} \
+          gcloud run deploy ${{ env.CLOUD_RUN_APP_NAME }} \
             --platform "managed" \
             --region us-central1 \
             --allow-unauthenticated \
