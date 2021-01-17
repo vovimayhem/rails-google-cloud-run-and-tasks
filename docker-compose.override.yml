@@ -70,6 +70,9 @@ services:
       # chrome install:
       CHROME_URL: http://chrome:3333
 
+      GOOGLE_CLOUD_PROJECT: ${DEMO_GOOGLE_CLOUD_PROJECT:-example-gcp-project-id}
+      GOOGLE_CLOUD_CREDENTIALS: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/google-cloud-credentials.json
+
   web:
     <<: *app
     command: rails server -b 0.0.0.0
