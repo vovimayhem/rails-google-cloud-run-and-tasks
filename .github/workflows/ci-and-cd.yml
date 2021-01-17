@@ -234,12 +234,9 @@ jobs:
       - name: Export Release Image Digest to ENV
         run: echo "RELEASE_IMAGE_DIGEST=$(cat release-image-digest.txt)" >> $GITHUB_ENV
 
-      - name: Cleanup the Google Cloud Run App Name
-        run:  echo "CLOUD_RUN_APP_NAME=$(echo 'rails-google-cloud-run-and-tasks-${{ env.TAG_SAFE_BRANCH }}' | cut -c 1-63)" >> $GITHUB_ENV
-
       - name: Deploy to Cloud Run
         run: |-
-          gcloud run deploy ${{ env.CLOUD_RUN_APP_NAME }} \
+          gcloud run deploy $(review-app-name rails-google-cloud-run-and-tasks) \
             --platform "managed" \
             --region us-central1 \
             --allow-unauthenticated \
