@@ -9,11 +9,8 @@
 
 # Ignore docker and environment files:
 *Dockerfile
-docker-compose*.yml
-staging-compose.yml
-ci-compose.yml
+*-compose*.yml
 .dockerignore
-stack.yml
 .devcontainer
 
 # Ignore dotenv files
