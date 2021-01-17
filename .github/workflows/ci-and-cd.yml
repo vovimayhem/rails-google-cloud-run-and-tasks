@@ -9,7 +9,7 @@ on:
   pull_request:
     branches:
       - main
-
+#
 jobs:
   build_test_image:
     name: Build Test Image
@@ -18,288 +18,292 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Setup Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.x'
-
       - name: Add CI/CD scripts to system path
         run: echo "${GITHUB_WORKSPACE}/.github/workflows/bin" >> $GITHUB_PATH
 
+      - name: Show GITHUB_HEAD_REF
+        run: echo ${GITHUB_HEAD_REF}
+
+      - name: Show GITHUB_REF
+        run: echo ${GITHUB_REF}
+
       - name: Normalize env vars
-        run: normalize-env-vars >> $GITHUB_ENV
+        run: normalize-env-vars
 
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
+  #    - name: Normalize env vars
+  #      run: normalize-env-vars >> $GITHUB_ENV
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: buildx-cache-${{ env.GIT_BRANCH }}-${{ github.sha }}
-          restore-keys: |
-            buildx-cache-${{ env.GIT_BRANCH }}-
-            buildx-cache-main-
-            buildx-cache-
+  #     - name: Set up Docker Buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v1
 
-      - name: Build Image
-        id: build_test_image
-        uses: docker/build-push-action@v2
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: ./Dockerfile
-          target: testing
+  #     - name: Cache Docker layers
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: /tmp/.buildx-cache
+  #         key: buildx-cache-${{ env.GIT_BRANCH }}-${{ github.sha }}
+  #         restore-keys: |
+  #           buildx-cache-${{ env.GIT_BRANCH }}-
+  #           buildx-cache-main-
+  #           buildx-cache-
 
-          platforms: linux/amd64
+  #     - name: Build Image
+  #       id: build_test_image
+  #       uses: docker/build-push-action@v2
+  #       with:
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         context: .
+  #         file: ./Dockerfile
+  #         target: testing
+
+  #         platforms: linux/amd64
           
-          tags: |
-            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.GIT_COMMIT_SHORT_SHA }}
-            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.TAG_SAFE_BRANCH }}
-            vovimayhem/rails-google-cloud-run-and-tasks:testing-latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          build-args: |
-            APP_PATH=${{env.PWD}}
-            DEVELOPER_UID=${{env.UID}}
-            BUILD_DATE=${{env.BUILD_DATE}}
-            DEVELOPER_USERNAME=${{env.USER}}
-            SOURCE_BRANCH=${{env.GIT_BRANCH}}
-            SOURCE_COMMIT=${{env.GIT_COMMIT_SHA}}
-            IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
+  #         tags: |
+  #           vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.GIT_COMMIT_SHORT_SHA }}
+  #           vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.TAG_SAFE_BRANCH }}
+  #           vovimayhem/rails-google-cloud-run-and-tasks:testing-latest
+  #         cache-from: type=local,src=/tmp/.buildx-cache
+  #         cache-to: type=local,dest=/tmp/.buildx-cache
+  #         build-args: |
+  #           APP_PATH=${{env.PWD}}
+  #           DEVELOPER_UID=${{env.UID}}
+  #           BUILD_DATE=${{env.BUILD_DATE}}
+  #           DEVELOPER_USERNAME=${{env.USER}}
+  #           SOURCE_BRANCH=${{env.GIT_BRANCH}}
+  #           SOURCE_COMMIT=${{env.GIT_COMMIT_SHA}}
+  #           IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
 
-      - name: List available Images
-        run: docker image ls
+  #     - name: List available Images
+  #       run: docker image ls
   
-  run_tests:
-    name: Testing
-    runs-on: ubuntu-latest
-    needs: [build_test_image]
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+  # run_tests:
+  #   name: Testing
+  #   runs-on: ubuntu-latest
+  #   needs: [build_test_image]
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v2
 
-      - name: Setup Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.x'
+  #     - name: Setup Ruby
+  #       uses: actions/setup-ruby@v1
+  #       with:
+  #         ruby-version: '2.x'
 
-      - name: Add CI/CD scripts to system path
-        run: echo "${GITHUB_WORKSPACE}/.github/workflows/bin" >> $GITHUB_PATH
+  #     - name: Add CI/CD scripts to system path
+  #       run: echo "${GITHUB_WORKSPACE}/.github/workflows/bin" >> $GITHUB_PATH
 
-      - name: Normalize env vars
-        run: normalize-env-vars >> $GITHUB_ENV
+  #     - name: Normalize env vars
+  #       run: normalize-env-vars >> $GITHUB_ENV
 
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
+  #     - name: Set up Docker Buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v1
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: buildx-cache-${{ env.GIT_BRANCH }}-${{ github.sha }}
-          restore-keys: |
-            buildx-cache-${{ env.GIT_BRANCH }}-
-            buildx-cache-main-
-            buildx-cache-
+  #     - name: Cache Docker layers
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: /tmp/.buildx-cache
+  #         key: buildx-cache-${{ env.GIT_BRANCH }}-${{ github.sha }}
+  #         restore-keys: |
+  #           buildx-cache-${{ env.GIT_BRANCH }}-
+  #           buildx-cache-main-
+  #           buildx-cache-
 
-      - name: Load Testing Image
-        id: load_test_image
-        uses: docker/build-push-action@v2
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: ./Dockerfile
-          target: testing
-          push: false
+  #     - name: Load Testing Image
+  #       id: load_test_image
+  #       uses: docker/build-push-action@v2
+  #       with:
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         context: .
+  #         file: ./Dockerfile
+  #         target: testing
+  #         push: false
 
-          # Make the build result to be available in the Docker client:
-          load: true
+  #         # Make the build result to be available in the Docker client:
+  #         load: true
 
-          platforms: linux/amd64
-          tags: |
-            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.GIT_COMMIT_SHORT_SHA }}
-            vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.TAG_SAFE_BRANCH }}
-            vovimayhem/rails-google-cloud-run-and-tasks:testing-latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          build-args: |
-            APP_PATH=${{ env.PWD }}
-            DEVELOPER_UID=${{ env.UID }}
-            BUILD_DATE=${{ env.BUILD_DATE }}
-            DEVELOPER_USERNAME=${{ env.USER }}
-            SOURCE_BRANCH=${{ env.GIT_BRANCH }}
-            SOURCE_COMMIT=${{ env.GIT_COMMIT_SHA }}
-            IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
+  #         platforms: linux/amd64
+  #         tags: |
+  #           vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.GIT_COMMIT_SHORT_SHA }}
+  #           vovimayhem/rails-google-cloud-run-and-tasks:testing-${{ env.TAG_SAFE_BRANCH }}
+  #           vovimayhem/rails-google-cloud-run-and-tasks:testing-latest
+  #         cache-from: type=local,src=/tmp/.buildx-cache
+  #         cache-to: type=local,dest=/tmp/.buildx-cache
+  #         build-args: |
+  #           APP_PATH=${{ env.PWD }}
+  #           DEVELOPER_UID=${{ env.UID }}
+  #           BUILD_DATE=${{ env.BUILD_DATE }}
+  #           DEVELOPER_USERNAME=${{ env.USER }}
+  #           SOURCE_BRANCH=${{ env.GIT_BRANCH }}
+  #           SOURCE_COMMIT=${{ env.GIT_COMMIT_SHA }}
+  #           IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
 
-      - name: Run Tests
-        run: ci-compose run tests
-        env:
-          # Configures docker-compose to use Docker CLI to build the image:
-          COMPOSE_DOCKER_CLI_BUILD: 1
-          # Configures Docker CLI to use BuildKit to build the image:
-          DOCKER_BUILDKIT: 1
+  #     - name: Run Tests
+  #       run: ci-compose run tests
+  #       env:
+  #         # Configures docker-compose to use Docker CLI to build the image:
+  #         COMPOSE_DOCKER_CLI_BUILD: 1
+  #         # Configures Docker CLI to use BuildKit to build the image:
+  #         DOCKER_BUILDKIT: 1
 
-  build_release_image:
-    name: Build Release Image
-    runs-on: ubuntu-latest
-    needs: [build_test_image]
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+  # build_release_image:
+  #   name: Build Release Image
+  #   runs-on: ubuntu-latest
+  #   needs: [build_test_image]
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v2
 
-      - name: Setup Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.x'
+  #     - name: Setup Ruby
+  #       uses: actions/setup-ruby@v1
+  #       with:
+  #         ruby-version: '2.x'
 
-      - name: Add CI/CD scripts to system path
-        run: echo "${GITHUB_WORKSPACE}/.github/workflows/bin" >> $GITHUB_PATH
+  #     - name: Add CI/CD scripts to system path
+  #       run: echo "${GITHUB_WORKSPACE}/.github/workflows/bin" >> $GITHUB_PATH
 
-      - name: Normalize env vars
-        run: normalize-env-vars >> $GITHUB_ENV
+  #     - name: Normalize env vars
+  #       run: normalize-env-vars >> $GITHUB_ENV
 
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
+  #     - name: Set up Docker Buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v1
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          project_id: icalia-devops
-          service_account_key: ${{ secrets.DEPLOY_GOOGLE_APPLICATION_CREDENTIALS }}
+  #     - name: Set up Cloud SDK
+  #       uses: google-github-actions/setup-gcloud@master
+  #       with:
+  #         project_id: icalia-devops
+  #         service_account_key: ${{ secrets.DEPLOY_GOOGLE_APPLICATION_CREDENTIALS }}
 
-      - name: Authorize Docker push
-        run: gcloud auth configure-docker
+  #     - name: Authorize Docker push
+  #       run: gcloud auth configure-docker
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: buildx-cache-${{ env.GIT_BRANCH }}-${{ github.sha }}
-          restore-keys: |
-            buildx-cache-${{ env.GIT_BRANCH }}-
-            buildx-cache-main-
-            buildx-cache-
+  #     - name: Cache Docker layers
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: /tmp/.buildx-cache
+  #         key: buildx-cache-${{ env.GIT_BRANCH }}-${{ github.sha }}
+  #         restore-keys: |
+  #           buildx-cache-${{ env.GIT_BRANCH }}-
+  #           buildx-cache-main-
+  #           buildx-cache-
 
-      - name: List directory 1
-        run: ls -lah
+  #     - name: List directory 1
+  #       run: ls -lah
 
-      - name: Build
-        id: build_release_image
-        uses: docker/build-push-action@v2
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: ./Dockerfile
-          target: release
-          push: true # false # we should push when the branch is "main"...
+  #     - name: Build
+  #       id: build_release_image
+  #       uses: docker/build-push-action@v2
+  #       with:
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         context: .
+  #         file: ./Dockerfile
+  #         target: release
+  #         push: true # false # we should push when the branch is "main"...
 
-          platforms: linux/amd64
-          tags: |
-            gcr.io/icalia-devops/rails-google-cloud-run-and-tasks:${{ env.GIT_COMMIT_SHORT_SHA }}
-            gcr.io/icalia-devops/rails-google-cloud-run-and-tasks:${{ env.TAG_SAFE_BRANCH }}
-            gcr.io/icalia-devops/rails-google-cloud-run-and-tasks:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          build-args: |
-            APP_PATH=${{ env.PWD }}
-            DEVELOPER_UID=${{ env.UID }}
-            BUILD_DATE=${{ env.BUILD_DATE }}
-            DEVELOPER_USERNAME=${{ env.USER }}
-            SOURCE_BRANCH=${{ env.GIT_BRANCH }}
-            SOURCE_COMMIT=${{ env.GIT_COMMIT_SHA }}
-            IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
+  #         platforms: linux/amd64
+  #         tags: |
+  #           gcr.io/icalia-devops/rails-google-cloud-run-and-tasks:${{ env.GIT_COMMIT_SHORT_SHA }}
+  #           gcr.io/icalia-devops/rails-google-cloud-run-and-tasks:${{ env.TAG_SAFE_BRANCH }}
+  #           gcr.io/icalia-devops/rails-google-cloud-run-and-tasks:latest
+  #         cache-from: type=local,src=/tmp/.buildx-cache
+  #         cache-to: type=local,dest=/tmp/.buildx-cache
+  #         build-args: |
+  #           APP_PATH=${{ env.PWD }}
+  #           DEVELOPER_UID=${{ env.UID }}
+  #           BUILD_DATE=${{ env.BUILD_DATE }}
+  #           DEVELOPER_USERNAME=${{ env.USER }}
+  #           SOURCE_BRANCH=${{ env.GIT_BRANCH }}
+  #           SOURCE_COMMIT=${{ env.GIT_COMMIT_SHA }}
+  #           IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
 
-      - name: List directory 2
-        run: ls -lah
+  #     - name: List directory 2
+  #       run: ls -lah
 
-      - name: Generate Release Image Digest File
-        run: echo ${{ steps.build_release_image.outputs.digest }} > release-image-digest.txt
+  #     - name: Generate Release Image Digest File
+  #       run: echo ${{ steps.build_release_image.outputs.digest }} > release-image-digest.txt
 
-      # Used to deploy the image using the SHA256 in the deploy job:
-      - name: Persist Release Image Digest File
-        uses: actions/upload-artifact@v2
-        with:
-          name: release-image-digest
-          path: release-image-digest.txt
-          retention-days: 1
+  #     # Used to deploy the image using the SHA256 in the deploy job:
+  #     - name: Persist Release Image Digest File
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: release-image-digest
+  #         path: release-image-digest.txt
+  #         retention-days: 1
 
-  deploy_to_review:
-    name: Deploy to Review
-    runs-on: ubuntu-latest
-    needs: [run_tests, build_release_image]
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+  # deploy_to_review:
+  #   name: Deploy to Review
+  #   runs-on: ubuntu-latest
+  #   needs: [run_tests, build_release_image]
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v2
 
-      - name: Setup Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.x'
+  #     - name: Setup Ruby
+  #       uses: actions/setup-ruby@v1
+  #       with:
+  #         ruby-version: '2.x'
 
-      - name: Add CI/CD scripts to system path
-        run: echo "${GITHUB_WORKSPACE}/.github/workflows/bin" >> $GITHUB_PATH
+  #     - name: Add CI/CD scripts to system path
+  #       run: echo "${GITHUB_WORKSPACE}/.github/workflows/bin" >> $GITHUB_PATH
 
-      - name: Normalize env vars
-        run: normalize-env-vars >> $GITHUB_ENV
+  #     - name: Normalize env vars
+  #       run: normalize-env-vars >> $GITHUB_ENV
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          project_id: icalia-devops
-          service_account_key: ${{ secrets.DEPLOY_GOOGLE_APPLICATION_CREDENTIALS }}
+  #     - name: Set up Cloud SDK
+  #       uses: google-github-actions/setup-gcloud@master
+  #       with:
+  #         project_id: icalia-devops
+  #         service_account_key: ${{ secrets.DEPLOY_GOOGLE_APPLICATION_CREDENTIALS }}
 
-      - name: Download Release Image Digest File
-        uses: actions/download-artifact@v2
-        with:
-          name: release-image-digest
+  #     - name: Download Release Image Digest File
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: release-image-digest
 
-      - name: Export Release Image Digest to ENV
-        run: echo "RELEASE_IMAGE_DIGEST=$(cat release-image-digest.txt)" >> $GITHUB_ENV
+  #     - name: Export Release Image Digest to ENV
+  #       run: echo "RELEASE_IMAGE_DIGEST=$(cat release-image-digest.txt)" >> $GITHUB_ENV
 
-      - name: Deploy to Cloud Run
-        run: |-
-          gcloud run deploy rails-google-cloud-run-and-tasks-${{ env.TAG_SAFE_BRANCH }} \
-            --platform "managed" \
-            --region us-central1 \
-            --allow-unauthenticated \
-            --set-env-vars RAILS_LOG_TO_STDOUT=yes \
-            --set-env-vars RAILS_SERVE_STATIC_FILES=yes \
-            --service-account=${{ secrets.DEMO_SERVICE_ACCOUNT }} \
-            --image gcr.io/icalia-devops/rails-google-cloud-run-and-tasks@${{ env.RELEASE_IMAGE_DIGEST }} \
-            --set-env-vars APP_GOOGLE_CLOUD_SECRET=projects/997623033595/secrets/rails-google-cloud-run-and-tasks-secrets
+  #     - name: Deploy to Cloud Run
+  #       run: |-
+  #         gcloud run deploy rails-google-cloud-run-and-tasks-${{ env.TAG_SAFE_BRANCH }} \
+  #           --platform "managed" \
+  #           --region us-central1 \
+  #           --allow-unauthenticated \
+  #           --set-env-vars RAILS_LOG_TO_STDOUT=yes \
+  #           --set-env-vars RAILS_SERVE_STATIC_FILES=yes \
+  #           --service-account=${{ secrets.DEMO_SERVICE_ACCOUNT }} \
+  #           --image gcr.io/icalia-devops/rails-google-cloud-run-and-tasks@${{ env.RELEASE_IMAGE_DIGEST }} \
+  #           --set-env-vars APP_GOOGLE_CLOUD_SECRET=projects/997623033595/secrets/rails-google-cloud-run-and-tasks-secrets
 
-  deploy_to_production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    needs: [run_tests, build_release_image]
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          project_id: icalia-devops
-          service_account_key: ${{ secrets.DEPLOY_GOOGLE_APPLICATION_CREDENTIALS }}
+  # deploy_to_production:
+  #   name: Deploy to Production
+  #   runs-on: ubuntu-latest
+  #   needs: [run_tests, build_release_image]
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #     - name: Set up Cloud SDK
+  #       uses: google-github-actions/setup-gcloud@master
+  #       with:
+  #         project_id: icalia-devops
+  #         service_account_key: ${{ secrets.DEPLOY_GOOGLE_APPLICATION_CREDENTIALS }}
 
-      - name: Download Release Image Digest File
-        uses: actions/download-artifact@v2
-        with:
-          name: release-image-digest
+  #     - name: Download Release Image Digest File
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: release-image-digest
 
-      - name: Export Release Image Digest to ENV
-        run: echo "RELEASE_IMAGE_DIGEST=$(cat release-image-digest.txt)" >> $GITHUB_ENV
+  #     - name: Export Release Image Digest to ENV
+  #       run: echo "RELEASE_IMAGE_DIGEST=$(cat release-image-digest.txt)" >> $GITHUB_ENV
 
-      - name: Deploy to Cloud Run
-        run: |-
-          gcloud run deploy rails-google-cloud-run-and-tasks \
-            --platform "managed" \
-            --region us-central1 \
-            --allow-unauthenticated \
-            --set-env-vars RAILS_LOG_TO_STDOUT=yes \
-            --set-env-vars RAILS_SERVE_STATIC_FILES=yes \
-            --service-account=${{ secrets.DEMO_SERVICE_ACCOUNT }} \
-            --image gcr.io/icalia-devops/rails-google-cloud-run-and-tasks@${{ env.RELEASE_IMAGE_DIGEST }} \
-            --set-env-vars APP_GOOGLE_CLOUD_SECRET=projects/997623033595/secrets/rails-google-cloud-run-and-tasks-secrets
+  #     - name: Deploy to Cloud Run
+  #       run: |-
+  #         gcloud run deploy rails-google-cloud-run-and-tasks \
+  #           --platform "managed" \
+  #           --region us-central1 \
+  #           --allow-unauthenticated \
+  #           --set-env-vars RAILS_LOG_TO_STDOUT=yes \
+  #           --set-env-vars RAILS_SERVE_STATIC_FILES=yes \
+  #           --service-account=${{ secrets.DEMO_SERVICE_ACCOUNT }} \
+  #           --image gcr.io/icalia-devops/rails-google-cloud-run-and-tasks@${{ env.RELEASE_IMAGE_DIGEST }} \
+  #           --set-env-vars APP_GOOGLE_CLOUD_SECRET=projects/997623033595/secrets/rails-google-cloud-run-and-tasks-secrets
