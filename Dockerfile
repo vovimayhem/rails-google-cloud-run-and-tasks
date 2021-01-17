@@ -102,7 +102,11 @@ ARG DEVELOPER_USERNAME=you
 USER root
 
 # Install sudo, along with any other tool required at development phase:
-RUN apt-get install -y --no-install-recommends sudo
+RUN apt-get install -y --no-install-recommends \
+  # Vim will be used to edit files when inside the container (git, etc):
+  vim \
+  # Sudo will be used to install/configure system stuff if needed during dev:
+  sudo
 
 # Add the developer user to the sudoers list:
 RUN echo "${DEVELOPER_USERNAME} ALL=(ALL) NOPASSWD:ALL" | tee "/etc/sudoers.d/${DEVELOPER_USERNAME}"
