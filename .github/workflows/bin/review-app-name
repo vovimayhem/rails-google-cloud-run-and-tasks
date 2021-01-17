@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# A small script to generate google-cloud-run app names
+# using the branch name... which must meet certain criteria:
+# - Service name must use only lowercase alphanumeric characters and dashes.
+# - Cannot begin or end with a dash
+# - Cannot be longer than 63 characters
+
+# We'll use the 'TAG_SAFE_BRANCH' initialized by the `normalize-env-vars`
+# script (run it before!)
+
+tag_safe_branch = ENV['TAG_SAFE_BRANCH']
+
+# Use the received arg and tag_safe_branch to generate the app name:
+app_name = "#{ARGV[0]}-#{tag_safe_branch}"[0..62]
+
+# Keep removing the final character until app_name no longer ends with a dash:
+app_name = app_name[0..-2] while app_name[-1] == '-'
+
+# Echo the app name:
+puts app_name

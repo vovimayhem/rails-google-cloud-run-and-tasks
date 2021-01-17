@@ -7,7 +7,10 @@ git_sha = ENV['GITHUB_SHA']
 git_short_sha = git_sha[0..7]
 git_committed_at = `git log -1 --pretty=format:'%ct'`
 
-git_branch = (ENV['GITHUB_HEAD_REF'] || ENV['GITHUB_REF']).delete_prefix 'refs/heads/'
+git_branch = ENV.fetch('GITHUB_HEAD_REF', '')
+git_branch = ENV.fetch('GITHUB_REF', '') if git_branch.empty?
+git_branch = git_branch.delete_prefix 'refs/heads/'
+
 docker_tag_name_from_branch = git_branch.split('/').reverse.join('-')
 
 build_date = Time.now.strftime('%Y-%m-%dT%H:%M:%S%z')
