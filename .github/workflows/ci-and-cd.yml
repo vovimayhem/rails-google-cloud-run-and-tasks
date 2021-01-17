@@ -269,7 +269,8 @@ jobs:
             --set-env-vars RAILS_LOG_TO_STDOUT=yes \
             --set-env-vars RAILS_SERVE_STATIC_FILES=yes \
             --service-account=${{ secrets.DEMO_SERVICE_ACCOUNT }} \
-            --image gcr.io/icalia-devops/rails-google-cloud-run-and-tasks@${{ env.RELEASE_IMAGE_DIGEST }}
+            --image gcr.io/icalia-devops/rails-google-cloud-run-and-tasks@${{ env.RELEASE_IMAGE_DIGEST }} \
+            --set-env-vars APP_GOOGLE_CLOUD_SECRET=projects/997623033595/secrets/rails-google-cloud-run-and-tasks-secrets
 
   deploy_to_production:
     name: Deploy to Production
@@ -299,4 +300,5 @@ jobs:
             --set-env-vars RAILS_LOG_TO_STDOUT=yes \
             --set-env-vars RAILS_SERVE_STATIC_FILES=yes \
             --service-account=${{ secrets.DEMO_SERVICE_ACCOUNT }} \
-            --image gcr.io/icalia-devops/rails-google-cloud-run-and-tasks@${{ env.RELEASE_IMAGE_DIGEST }}
+            --image gcr.io/icalia-devops/rails-google-cloud-run-and-tasks@${{ env.RELEASE_IMAGE_DIGEST }} \
+            --set-env-vars APP_GOOGLE_CLOUD_SECRET=projects/997623033595/secrets/rails-google-cloud-run-and-tasks-secrets
