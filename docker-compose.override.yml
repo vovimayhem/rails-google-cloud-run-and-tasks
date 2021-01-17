@@ -7,7 +7,7 @@ volumes:
 services:
   # We'll use this service to run the tests locally:
   tests: &app
-    image: vovimayhem/rails-google-cloud-run-and-tasks:development
+    image: vovimayhem/rails-google-cloud-demo:development
     build:
       context: .
       target: development
@@ -15,11 +15,11 @@ services:
         BUILDKIT_INLINE_CACHE: "1"
         DEVELOPER_UID: ${UID:-1000}
         DEVELOPER_USERNAME: ${USER:-you}
-        APP_PATH: ${PWD:-/srv/rails-google-cloud-run-and-tasks}
-    entrypoint: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/bin/dev-entrypoint
+        APP_PATH: ${PWD:-/srv/rails-google-cloud-demo}
+    entrypoint: ${PWD:-/srv/rails-google-cloud-demo}/bin/dev-entrypoint
     volumes:
       # Mount the app code into the app containers at the "/usr/src" folder:
-      - .:${PWD:-/srv/rails-google-cloud-run-and-tasks}
+      - .:${PWD:-/srv/rails-google-cloud-demo}
 
       # After mounting the app code, we will use volumes to store the project's
       # gem libraries and node modules.
@@ -43,7 +43,7 @@ services:
       #   macOS/Windows, since a local volume bind on mac/win is significantly
       #   slower than a Docker volume, and node module install is very sensitive
       #   to I/O performance
-      - node_modules:${PWD:-/srv/rails-google-cloud-run-and-tasks}/node_modules
+      - node_modules:${PWD:-/srv/rails-google-cloud-demo}/node_modules
 
     # Keep the stdin open, so we can attach to our app container's process
     # and do things such as byebug, etc:
@@ -71,7 +71,7 @@ services:
       CHROME_URL: http://chrome:3333
 
       GOOGLE_CLOUD_PROJECT: ${DEMO_GOOGLE_CLOUD_PROJECT:-example-gcp-project-id}
-      GOOGLE_CLOUD_CREDENTIALS: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/google-cloud-credentials.json
+      GOOGLE_CLOUD_CREDENTIALS: ${PWD:-/srv/rails-google-cloud-demo}/google-cloud-credentials.json
 
   web:
     <<: *app

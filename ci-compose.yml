@@ -16,8 +16,8 @@ volumes:
 
 services:
   tests:
-    image: vovimayhem/rails-google-cloud-run-and-tasks:testing-${GIT_COMMIT_SHORT_SHA:-latest}
-    entrypoint: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/bin/dev-entrypoint
+    image: vovimayhem/rails-google-cloud-demo:testing-${GIT_COMMIT_SHORT_SHA:-latest}
+    entrypoint: ${PWD:-/srv/rails-google-cloud-demo}/bin/dev-entrypoint
     build: &app_ci_build
       context: .
       target: testing
@@ -25,19 +25,19 @@ services:
         BUILDKIT_INLINE_CACHE: "1"
         DEVELOPER_UID: ${UID:-1000}
         DEVELOPER_USERNAME: ${USER:-you}
-        APP_PATH: ${PWD:-/srv/rails-google-cloud-run-and-tasks}
+        APP_PATH: ${PWD:-/srv/rails-google-cloud-demo}
     depends_on:
       - chrome
     command: rspec
     volumes:
       # Mount the app code into the app container:
-      - .:${PWD:-/srv/rails-google-cloud-run-and-tasks}
+      - .:${PWD:-/srv/rails-google-cloud-demo}
 
       # Mount the test coverage volume, so the results persist in this volume:
-      - test_coverage:${PWD:-/srv/rails-google-cloud-run-and-tasks}/coverage
+      - test_coverage:${PWD:-/srv/rails-google-cloud-demo}/coverage
 
       # Replace the binded local node_modules folder with a docker volume:
-      - node_modules:${PWD:-/srv/rails-google-cloud-run-and-tasks}/node_modules
+      - node_modules:${PWD:-/srv/rails-google-cloud-demo}/node_modules
 
     environment:
       RAILS_ENV: test
