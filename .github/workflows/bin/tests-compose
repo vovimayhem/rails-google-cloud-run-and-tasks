@@ -1,3 +1,0 @@
-#! /bin/sh
-
-exec docker-compose --file docker-compose.yml -f tests-compose.yml $@

@@ -2,7 +2,7 @@
 # file on CI/CD contexts, such as SemaphoreCI or Github Actions.
 #
 # A useful alias to run this on your CI/CD pipelines:
-# `alias tests-compose="docker-compose --file docker-compose.yml --file tests-compose.yml"`
+# `alias ci-compose="docker-compose --file docker-compose.yml --file ci-compose.yml"`
 #
 # See https://docs.docker.com/compose/extends/#understanding-multiple-compose-files
 

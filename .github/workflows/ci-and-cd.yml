@@ -135,7 +135,7 @@ jobs:
             IMAGE_NAME=vovimayhem/rails-google-cloud-run-and-tasks
 
       - name: Run Tests
-        run: tests-compose run tests
+        run: ci-compose run tests
         env:
           # Configures docker-compose to use Docker CLI to build the image:
           COMPOSE_DOCKER_CLI_BUILD: 1
