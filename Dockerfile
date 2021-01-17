@@ -46,7 +46,7 @@ RUN apt-get update \
     yarn
 
 # Receive the app path as an argument:
-ARG APP_PATH=/srv/rails-google-cloud-run-and-tasks
+ARG APP_PATH=/srv/rails-google-cloud-demo
 
 # Receive the developer user's UID and USER:
 ARG DEVELOPER_UID=1000
@@ -132,7 +132,7 @@ FROM testing AS builder
 # Receive the developer username and the app path arguments again, as ARGS
 # won't persist between stages on non-buildkit builds:
 ARG DEVELOPER_USERNAME=you
-ARG APP_PATH=/srv/rails-google-cloud-run-and-tasks
+ARG APP_PATH=/srv/rails-google-cloud-demo
 
 # Copy the full contents of the project:
 COPY --chown=${DEVELOPER_USERNAME} . ${APP_PATH}/
@@ -185,20 +185,20 @@ COPY --from=builder /usr/local/bundle /usr/local/bundle
 
 # Receive the app path argument again, as ARGS are not persisted between stages
 # on non-buildkit builds:
-ARG APP_PATH=/srv/rails-google-cloud-run-and-tasks
+ARG APP_PATH=/srv/rails-google-cloud-demo
 
 # Copy the app code and compiled assets from the "builder" stage to the
-# final destination at /srv/rails-google-cloud-run-and-tasks:
-COPY --from=builder --chown=nobody:nogroup ${APP_PATH} /srv/rails-google-cloud-run-and-tasks
+# final destination at /srv/rails-google-cloud-demo:
+COPY --from=builder --chown=nobody:nogroup ${APP_PATH} /srv/rails-google-cloud-demo
 
 # Set the container user to 'nobody':
 USER nobody
 
 # Set the RAILS and PORT default values:
-ENV HOME=/srv/rails-google-cloud-run-and-tasks RAILS_ENV=production PORT=3000
+ENV HOME=/srv/rails-google-cloud-demo RAILS_ENV=production PORT=3000
 
 # Set the installed app directory as the working directory:
-WORKDIR /srv/rails-google-cloud-run-and-tasks
+WORKDIR /srv/rails-google-cloud-demo
 
 # Set the default command:
 CMD [ "puma" ]
@@ -207,11 +207,11 @@ CMD [ "puma" ]
 ARG SOURCE_BRANCH="master"
 ARG SOURCE_COMMIT="000000"
 ARG BUILD_DATE="2017-09-26T16:13:26Z"
-ARG IMAGE_NAME="vovimayhem/rails-google-cloud-run-and-tasks:latest"
+ARG IMAGE_NAME="vovimayhem/rails-google-cloud-demo:latest"
 LABEL org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.name="rails-google-cloud-run-and-tasks" \
-      org.label-schema.description="rails-google-cloud-run-and-tasks" \
-      org.label-schema.vcs-url="https://github.com/vovimayhem/rails-google-cloud-run-and-tasks.git" \
+      org.label-schema.name="rails-google-cloud-demo" \
+      org.label-schema.description="rails-google-cloud-demo" \
+      org.label-schema.vcs-url="https://github.com/vovimayhem/rails-google-cloud-demo.git" \
       org.label-schema.vcs-ref=$SOURCE_COMMIT \
       org.label-schema.schema-version="1.0.0-rc1" \
       build-target="release" \

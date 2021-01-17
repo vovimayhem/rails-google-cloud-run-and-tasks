@@ -6,7 +6,7 @@ volumes:
 
 services:
   demo:
-    image: vovimayhem/rails-google-cloud-run-and-tasks:development
+    image: vovimayhem/rails-google-cloud-demo:development
     build:
       context: .
       target: development
@@ -14,21 +14,21 @@ services:
         BUILDKIT_INLINE_CACHE: "1"
         DEVELOPER_UID: ${UID:-1000}
         DEVELOPER_USERNAME: ${USER:-you}
-        APP_PATH: ${PWD:-/srv/rails-google-cloud-run-and-tasks}
+        APP_PATH: ${PWD:-/srv/rails-google-cloud-demo}
 
-    entrypoint: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/bin/dev-entrypoint
+    entrypoint: ${PWD:-/srv/rails-google-cloud-demo}/bin/dev-entrypoint
 
     volumes:
       # Mount the app code into the app containers at the "$HOME/prex-messaging"
       # folder:
-      - .:${PWD:-/srv/rails-google-cloud-run-and-tasks}:delegated
+      - .:${PWD:-/srv/rails-google-cloud-demo}:delegated
 
       # After mounting the app code, this replaces (copies) the image's gem
       # bundle with a volume. We're doing this so we are not forced to re-build
       # the image over and over whenever we install a new gem.
       - gem_bundle:/usr/local/bundle
 
-      - node_modules:${PWD:-/srv/rails-google-cloud-run-and-tasks}/node_modules
+      - node_modules:${PWD:-/srv/rails-google-cloud-demo}/node_modules
 
     # Keep the stdin open, so we can attach to our app container's process
     # and do things such as byebug, etc:
@@ -68,7 +68,7 @@ services:
       WEBPACKER_DEV_SERVER_PUBLIC: localhost:${DEMO_WEBPACKER_DEV_SERVER_PORT:-3035}
 
       GOOGLE_CLOUD_PROJECT: ${DEMO_GOOGLE_CLOUD_PROJECT:-example-gcp-project-id}
-      GOOGLE_CLOUD_CREDENTIALS: ${PWD:-/srv/rails-google-cloud-run-and-tasks}/google-cloud-credentials.json
+      GOOGLE_CLOUD_CREDENTIALS: ${PWD:-/srv/rails-google-cloud-demo}/google-cloud-credentials.json
 
       # Use VSCode as editor:
       EDITOR: code -w
