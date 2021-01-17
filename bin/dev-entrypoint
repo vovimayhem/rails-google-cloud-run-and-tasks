@@ -10,6 +10,7 @@ on_setup_lock_acquired do
   ensure_project_gems_are_installed
   ensure_project_node_packages_are_installed
 
+  setup_activerecord_database unless activerecord_database_ready?
   remove_rails_pidfile if rails_server?
 end if command_requires_setup?
 
