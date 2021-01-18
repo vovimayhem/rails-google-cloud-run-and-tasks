@@ -5,27 +5,28 @@ class SessionsController < ApplicationController
 
   # GET /sign-in
   def new
+    redirect_to root_path, notice: 'Already signed in' if user_signed_in?
   end
 
   # POST /session
   def create
-    token_payload, token_header = JWT.decode session_params[:token], nil, false
-    puts "==="
+    @token = GoogleIdToken.new(session_params[:token])
+    sign_in_user(@token.user) if @token.valid?
 
     respond_to do |format|
-      # if @session.save
-        format.html { redirect_to @session, notice: 'Session was successfully created.' }
-      # else
-      #   format.html { render :new }
-      # end
+      if user_signed_in?
+        format.html { redirect_to root_path, notice: 'Session was successfully created.' }
+      else
+        format.html { render :new }
+      end
     end
   end
 
   # DELETE /session
   def destroy
-    @session.destroy
+    sign_out_user
     respond_to do |format|
-      format.html { redirect_to sessions_url, notice: 'Session was successfully destroyed.' }
+      format.html { redirect_to root_path, notice: 'Session was successfully destroyed.' }
     end
   end
 
