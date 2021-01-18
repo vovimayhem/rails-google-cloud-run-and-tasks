@@ -13,6 +13,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
+    libpq5 \
     openssl \
     tzdata \
  && rm -rf /var/lib/apt/lists/*
@@ -41,7 +42,6 @@ RUN apt-get update \
     build-essential \
     git \
     libpq-dev \
-    openssh-client \
     nodejs \
     yarn
 
@@ -103,6 +103,7 @@ USER root
 
 # Install sudo, along with any other tool required at development phase:
 RUN apt-get install -y --no-install-recommends \
+  openssh-client \
   # Vim will be used to edit files when inside the container (git, etc):
   vim \
   # Sudo will be used to install/configure system stuff if needed during dev:
