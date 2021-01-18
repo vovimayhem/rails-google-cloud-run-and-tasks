@@ -349,6 +349,7 @@ DEPENDENCIES
   gmp (~> 0.7.43)
   google-cloud-secret_manager (~> 1.0)
   jbuilder (~> 2.7)
+  jwt (~> 2.2, >= 2.2.2)
   listen (~> 3.3)
   on_container (~> 0.0.10)
   pg (~> 1.1)

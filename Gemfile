@@ -39,6 +39,9 @@ gem 'bootsnap', '>= 1.4.4', require: false
 # Read secrets from Google Cloud Secret Manager
 gem 'google-cloud-secret_manager', '~> 1.0'
 
+# We'll use it to validate the id tokens from Identity Platform:
+gem 'jwt', '~> 2.2', '>= 2.2.2'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
