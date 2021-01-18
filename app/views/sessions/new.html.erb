@@ -1,5 +1,20 @@
+<h1>Sign In</h1>
 
-<div data-controller="sign-in">
-  <h1>Sign In</h1>
+
+<%= form_with data: { controller: "sign-in", action: "submit->sign-in#submit" } do |form| %>
   <p data-sign-in-target="output"></p>
-</div>
+
+  <div class="field">
+    <%= form.label :email %>
+    <%= form.email_field :email, data: { sign_in_target: "email" } %>
+  </div>
+
+  <div class="field">
+    <%= form.label :password %>
+    <%= form.password_field :password, data: { sign_in_target: "password" } %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "Sign In", data: { sign_in_target: "submit" } %>
+  </div>
+<% end %>
