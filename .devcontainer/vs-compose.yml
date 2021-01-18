@@ -21,7 +21,7 @@ services:
     volumes:
       # Mount the app code into the app containers at the "$HOME/prex-messaging"
       # folder:
-      - .:${PWD:-/srv/rails-google-cloud-demo}:delegated
+      - .:${PWD:-/srv/rails-google-cloud-demo}
 
       # After mounting the app code, this replaces (copies) the image's gem
       # bundle with a volume. We're doing this so we are not forced to re-build
