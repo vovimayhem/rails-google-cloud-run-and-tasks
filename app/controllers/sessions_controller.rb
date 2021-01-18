@@ -9,7 +9,7 @@ class SessionsController < ApplicationController
 
   # POST /session
   def create
-    @token = session_params[:token]
+    token_payload, token_header = JWT.decode session_params[:token], nil, false
     puts "==="
 
     respond_to do |format|
