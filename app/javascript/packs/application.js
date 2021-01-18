@@ -10,6 +10,7 @@ import "channels"
 import "jquery"
 import "popper.js"
 import "bootstrap"
+import firebase from "firebase/app"
 
 import "controllers"
 
@@ -17,3 +18,9 @@ Rails.start()
 Turbolinks.start()
 ActiveStorage.start()
 
+var config = {
+  apiKey: "AIzaSyBXqqLPmD_riyuycQ8-H5tZeI18l4JusCI",
+  authDomain: "icalia-devops.firebaseapp.com",
+};
+
+firebase.initializeApp(config);
