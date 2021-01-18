@@ -12,28 +12,34 @@ import firebase from "firebase/app"
 import "firebase/auth"
 
 export default class extends Controller {
-  static targets = [ "email", "password", "output", "submit" ]
+  static targets = [ "email", "password", "output", "submit", "token", "sessionForm" ]
 
   connect() {
     this.outputTarget.textContent = 'Hello, Stimulus is Online!'
   }
 
-  submit(event) {
+  async submit(event) {
     event.preventDefault()
     this.outputTarget.textContent = 'Signing you in...'
 
     const email = this.emailTarget.value
     const password = this.passwordTarget.value
+
+    const auth = firebase.auth()
     
-    firebase.auth().signInWithEmailAndPassword(email, password)
-    .then((user) => {
-      debugger // TODO: Verify ID Token - see https://firebase.google.com/docs/auth/admin/verify-id-tokens
-    })
-    .catch((error) => {
+    try {
+      const user = await auth.signInWithEmailAndPassword(email, password)
+      const idToken = await auth.currentUser.getIdToken(/* forceRefresh */ true)
+      
+      this.tokenTarget.value = idToken
+      this.sessionFormTarget.submit()
+    } catch(error) {
       const errorCode = error.code;
       const errorMessage = error.message;
       this.outputTarget.textContent = `${errorMessage} (${errorCode})`
       this.submitTarget.disabled = false
-    });
+
+      return false
+    }
   }
 }

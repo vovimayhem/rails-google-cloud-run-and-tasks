@@ -1,18 +1,18 @@
 require 'rails_helper'
 
-RSpec.describe "sessions/new", type: :view do
+RSpec.describe "sessions/edit", type: :view do
   before(:each) do
-    assign(:session, Session.new(
+    @session = assign(:session, Session.create!(
       email: "MyString",
       password: "MyString",
       token: "MyString"
     ))
   end
 
-  it "renders new session form" do
+  it "renders the edit session form" do
     render
 
-    assert_select "form[action=?][method=?]", sessions_path, "post" do
+    assert_select "form[action=?][method=?]", session_path(@session), "post" do
 
       assert_select "input[name=?]", "session[email]"
 

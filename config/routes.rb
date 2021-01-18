@@ -4,4 +4,5 @@ Rails.application.routes.draw do
   root 'home#index'
 
   get 'sign-in', to: 'sessions#new', as: :new_session
+  resource :session, only: %i[show create destroy]
 end
