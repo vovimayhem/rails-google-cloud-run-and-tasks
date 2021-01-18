@@ -1,8 +1,8 @@
 # Stage 1: Runtime =============================================================
 # The minimal package dependencies required to run the app in the release image:
 
-# Use the official Ruby 2.7.1 Slim Buster image as base:
-FROM ruby:2.7.1-slim-buster AS runtime
+# Use the official Ruby 2.7.2 Slim Buster image as base:
+FROM ruby:2.7.2-slim-buster AS runtime
 
 # We'll set MALLOC_ARENA_MAX for optimization purposes & prevent memory bloat
 # https://www.speedshop.co/2017/12/04/malloc-doubles-ruby-memory.html
@@ -13,6 +13,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
+    libpq5 \
     openssl \
     tzdata \
  && rm -rf /var/lib/apt/lists/*
@@ -29,7 +30,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends gnupg
 
 # Add nodejs debian LTS repo:
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 
 # Add the Yarn debian repository:
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
@@ -41,7 +42,6 @@ RUN apt-get update \
     build-essential \
     git \
     libpq-dev \
-    openssh-client \
     nodejs \
     yarn
 
@@ -103,6 +103,7 @@ USER root
 
 # Install sudo, along with any other tool required at development phase:
 RUN apt-get install -y --no-install-recommends \
+  openssh-client \
   # Vim will be used to edit files when inside the container (git, etc):
   vim \
   # Sudo will be used to install/configure system stuff if needed during dev:

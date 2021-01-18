@@ -28,6 +28,7 @@ services:
         APP_PATH: ${PWD:-/srv/rails-google-cloud-demo}
     depends_on:
       - chrome
+      - postgres
     command: rspec
     volumes:
       # Mount the app code into the app container:
@@ -43,6 +44,8 @@ services:
       RAILS_ENV: test
       
       CHROME_URL: http://chrome:3333
+
+      DATABASE_URL: postgres://postgres:3x4mpl3P455w0rd@postgres:5432/?encoding=unicode
       
       GIT_BRANCH: ${GIT_BRANCH}
       GIT_COMMIT_SHA: ${GIT_COMMIT_SHA}

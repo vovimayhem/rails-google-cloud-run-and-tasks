@@ -16,7 +16,7 @@
       "name": "Rails server",
       "type": "Ruby",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/rails",
+      "program": "bin/rails",
       "preLaunchTask": "Webpack Dev Server",
       "args": [ "server", "-b", "0.0.0.0", "-p", "3000" ],
       "debuggerPort": "1234"

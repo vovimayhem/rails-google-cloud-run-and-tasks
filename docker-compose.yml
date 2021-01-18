@@ -3,7 +3,19 @@ version: "3.7"
 # The application services will be defined at `docker-compose.override.yml`, to
 # leave here the service definitions common to the staging and ci/cd environments.
 
+volumes:
+  postgres_data:
+
 services:
+  postgres:
+    image: postgres:13-alpine
+    ports:
+      - ${DEMO_PG_PORT:-5432}:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: 3x4mpl3P455w0rd
+
   chrome:
     image: browserless/chrome:1.43-chrome-stable
     ports:

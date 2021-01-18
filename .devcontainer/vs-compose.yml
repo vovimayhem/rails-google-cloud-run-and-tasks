@@ -52,6 +52,10 @@ services:
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"
 
+    depends_on:
+      - chrome
+      - postgres
+
     # Specify environment variables available for our app containers. We'll
     # leave a YML anchor in case we need to override or add more variables if
     # needed on each app service:
@@ -61,6 +65,8 @@ services:
 
       DEBIAN_FRONTEND: dialog
       VSCODE_CONTEXT: "yes"
+
+      DATABASE_URL: postgres://postgres:3x4mpl3P455w0rd@postgres:5432/?encoding=unicode
 
       # Bind the webpack dev server service to 0.0.0.0 to allow connections from
       # the host:
