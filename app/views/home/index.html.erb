@@ -1,4 +1,13 @@
 <div data-controller="hello">
-  <h1>GCP + Rails Demo!</h1>
+  <h2>Home</h1>
   <p data-target="hello.output"></p>
+
+
+  <% if user_signed_in? %>
+    <%= render 'authenticated' %>
+  <% else %>
+    <%= render 'unauthenticated' %>
+  <% end %>
+
+  
 </div>

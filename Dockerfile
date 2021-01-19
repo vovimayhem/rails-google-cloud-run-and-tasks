@@ -103,6 +103,8 @@ USER root
 
 # Install sudo, along with any other tool required at development phase:
 RUN apt-get install -y --no-install-recommends \
+  # Be able to sign commits using GPG:
+  gnupg2 \
   openssh-client \
   # Vim will be used to edit files when inside the container (git, etc):
   vim \
