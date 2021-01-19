@@ -22,3 +22,7 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+# Users & Google Cloud Identity Platform
+
+(Other alternatives - https://www.g2.com/products/google-cloud-identity-platform/competitors/alternatives)
