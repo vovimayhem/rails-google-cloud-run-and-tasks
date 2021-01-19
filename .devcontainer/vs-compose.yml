@@ -76,5 +76,10 @@ services:
       GOOGLE_CLOUD_PROJECT: ${DEMO_GOOGLE_CLOUD_PROJECT:-example-gcp-project-id}
       GOOGLE_CLOUD_CREDENTIALS: ${PWD:-/srv/rails-google-cloud-demo}/google-cloud-credentials.json
 
+      # Added automatically at Google Cloud Run - should be the same as
+      # GOOGLE_CLOUD_CREDENTIALS, but using the googleauth library directly
+      # looks in this one instead:
+      GOOGLE_APPLICATION_CREDENTIALS: ${PWD:-/srv/rails-google-cloud-demo}/google-cloud-credentials.json
+
       # Use VSCode as editor:
       EDITOR: code -w

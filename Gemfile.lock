@@ -348,6 +348,7 @@ DEPENDENCIES
   debase (~> 0.2.4.1)
   gmp (~> 0.7.43)
   google-cloud-secret_manager (~> 1.0)
+  googleauth (~> 0.14.0)
   jbuilder (~> 2.7)
   jwt (~> 2.2, >= 2.2.2)
   listen (~> 3.3)
